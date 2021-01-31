@@ -1,0 +1,19 @@
+projectRoot = "../.."
+
+compiler = "clang++"
+ar = "ar"
+compilerFrontend="gcc"
+
+flags = [
+    "-std=c++20",
+    "-g"
+]
+
+[[builds]]
+    name = "essentials"
+    defines = ["-DDYNAMIC_LIB"]
+    buildRule = "dynamiclib"
+    outputName = "Essentials"
+    srcDirs = ["lib"]
+    includePaths = ["include"]
+

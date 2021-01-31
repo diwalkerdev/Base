@@ -1,0 +1,4 @@
+include $
+    /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/rules.ninja
+subninja $
+    /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/build.ninja

@@ -1,0 +1,10 @@
+# ninja log v5
+0	22	1612115596982334165	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o	ebbd2e34d431d676
+0	81	1612115597042334166	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/highresclock.o	c46aaf03f1227bc6
+81	161	1612115597122334168	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/libEssentials.so	82d8d01e47d0f04a
+0	23	1612115665969002328	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o	17a492c8ba629cb5
+0	80	1612115666025668995	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/highresclock.o	8f9ebad217b472b5
+80	128	1612115666072335663	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/libEssentials.so	6ef28fe47e51bfbb
+0	24	1612115756985670966	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o	17a492c8ba629cb5
+1	83	1612115757045670968	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/highresclock.o	8f9ebad217b472b5
+83	131	1612115757092337635	/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/libEssentials.so	6ef28fe47e51bfbb

@@ -1,0 +1,32 @@
+[
+  {
+    "directory": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug",
+    "command": "clang++ -DDYNAMIC_LIB -shared -fvisibility=hidden -fPIC -std=c++20 -g -I/home/dwalker0044/Projects/CppEssentials/include /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/highresclock.o -o /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/libEssentials.so ",
+    "file": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o",
+    "output": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/libEssentials.so"
+  },
+  {
+    "directory": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug",
+    "command": "clang++ -DDYNAMIC_LIB -std=c++20 -g -MMD -MF deps.d -I/home/dwalker0044/Projects/CppEssentials/include -c /home/dwalker0044/Projects/CppEssentials/lib/smallmath.cpp -o /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o",
+    "file": "/home/dwalker0044/Projects/CppEssentials/lib/smallmath.cpp",
+    "output": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/smallmath.o"
+  },
+  {
+    "directory": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug",
+    "command": "clang++ -DDYNAMIC_LIB -std=c++20 -g -MMD -MF deps.d -I/home/dwalker0044/Projects/CppEssentials/include -c /home/dwalker0044/Projects/CppEssentials/lib/highresclock.cpp -o /home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/highresclock.o",
+    "file": "/home/dwalker0044/Projects/CppEssentials/lib/highresclock.cpp",
+    "output": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/highresclock.o"
+  },
+  {
+    "directory": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug",
+    "command": "",
+    "file": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug/essentials/libEssentials.so",
+    "output": "libEssentials.so"
+  },
+  {
+    "directory": "/home/dwalker0044/Projects/CppEssentials/builds/linux-clang++-debug",
+    "command": "",
+    "file": "libEssentials.so",
+    "output": "essentials"
+  }
+]
