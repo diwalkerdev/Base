@@ -10,5 +10,4 @@ struct HighResClock {
     high_res_clock::time_point new_time;
 };
 
-DLL_PUBLIC
-auto elapsed_time(HighResClock& clk) -> double;
+DLL_PUBLIC double elapsed_time(HighResClock& clk);

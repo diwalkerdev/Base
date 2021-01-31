@@ -1,6 +1,6 @@
-#include "highresclock.hpp"
+#include "highresclock.h"
 
-inline auto elapsed_time(HighResClock& clk) -> double
+double elapsed_time(HighResClock& clk)
 {
     using duration = std::chrono::duration<double>;
     double time_secs;
