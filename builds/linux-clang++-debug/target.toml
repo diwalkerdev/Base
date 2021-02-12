@@ -6,14 +6,27 @@ compilerFrontend="gcc"
 
 flags = [
     "-std=c++20",
+    "-O3",
     "-g"
 ]
 
 [[builds]]
     name = "essentials"
-    defines = ["-DDYNAMIC_LIB"]
+    defines = ["DYNAMIC_LIB"]
     buildRule = "dynamiclib"
     outputName = "Essentials"
     srcDirs = ["lib"]
     includePaths = ["include"]
+
+[[builds]]
+    name = "tests"
+    buildRule = "exe"
+    requires = ["essentials"]
+    outputName = "Tests"
+    srcDirs = ["tests"]
+    includePaths = [
+        "/usr/include",
+        "include",
+        "lib"
+    ]
 
