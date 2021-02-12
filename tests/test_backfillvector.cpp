@@ -1,5 +1,6 @@
 #include "containers/backfill_vector.hpp"
 #include <cassert>
+#include <exception>
 
 
 auto make_bfv_12345() -> backfill_vector<int, 5>
@@ -56,6 +57,16 @@ void test_size_decreases_when_items_removed()
     assert(bfv.size() == 1);
     bfv.remove(0);
     assert(bfv.size() == 0);
+}
+
+void test_values_get_written_correctly()
+{
+    auto bv = make_bfv_12345();
+    assert(bv[0] == 1);
+    assert(bv[1] == 2);
+    assert(bv[2] == 3);
+    assert(bv[3] == 4);
+    assert(bv[4] == 5);
 }
 
 void test_riterators()
@@ -218,12 +229,79 @@ void test_can_iterate_const_items()
     assert(x == 15);
 }
 
+void test_allocation_beyond_capacity_throws()
+{
+    auto threw = false;
+    auto bfv   = make_bfv_12345();
+    try
+    {
+        bfv.allocate();
+    }
+    catch (std::exception e)
+    {
+        threw = true;
+    }
+
+    assert(threw);
+}
+
+void test_accessing_elements_before_allocation_throws()
+{
+    auto                    threw = false;
+    backfill_vector<int, 5> bv;
+
+    try
+    {
+        bv.at(0);
+    }
+    catch (std::exception e)
+    {
+        threw = true;
+    }
+
+    assert(threw);
+}
+
+void test_accessing_elements_beyond_allocation_throws()
+{
+    auto                    threw = false;
+    backfill_vector<int, 5> bv;
+    bv.allocate();
+
+    try
+    {
+        bv.at(1);
+    }
+    catch (std::exception e)
+    {
+        threw = true;
+    }
+
+    assert(threw);
+}
+
+void test_back_accesses_correct_element()
+{
+    backfill_vector<int, 5> bv;
+
+    bv.allocate();
+    auto& item = bv.back();
+    item       = 42;
+    assert(bv[0] == 42);
+
+    bv.allocate();
+    auto& item2 = bv.back();
+    item2       = 77;
+
+    assert(bv[1] == 77);
+}
 
 int test_backfill_vector_main()
 {
     test_starts_empty();
     test_size_increases_when_items_allocated();
     test_size_decreases_when_items_removed();
+    test_values_get_written_correctly();
     test_riterators();
     test_vector_back_fills_when_items_removed();
     test_remove_from_list_of_indices();
@@ -235,6 +313,9 @@ int test_backfill_vector_main()
     test_removes_end_sequence();
     test_remove_invalid_indices_does_nothing();
     test_can_iterate_const_items();
+    test_allocation_beyond_capacity_throws();
+    test_accessing_elements_before_allocation_throws();
+    test_back_accesses_correct_element();
     printf("TEST BACKFILL complete.\n");
     return 0;
 }

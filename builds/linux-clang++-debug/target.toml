@@ -7,7 +7,11 @@ compilerFrontend="gcc"
 flags = [
     "-std=c++20",
     "-O3",
-    "-g"
+    "-g",
+    "-fsanitize=address",
+    "-fno-omit-frame-pointer", # get nicer stack traces from address sanitizer.
+    "-fsanitize=undefined",
+    "-Wall"
 ]
 
 [[builds]]

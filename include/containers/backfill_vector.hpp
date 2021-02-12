@@ -2,6 +2,7 @@
 
 #include "dllexports.h"
 #include <array>
+#include <cstddef>
 #include <stdexcept>
 #include <vector>
 
@@ -114,22 +115,22 @@ struct DLL_PUBLIC backfill_vector {
 
 
     /// back - returns the element at the back of the container.
-    constexpr auto
+    constexpr auto&
     back() noexcept
     {
-        return *end();
+        return *(end() - 1);
     }
 
-    constexpr auto
+    constexpr auto const&
     back() const noexcept
     {
-        return *cend();
+        return *(cend() - 1);
     }
 
-    constexpr auto
+    constexpr auto const&
     cback() const noexcept
     {
-        return *cend();
+        return *(cend() - 1);
     }
 
 
@@ -147,7 +148,16 @@ struct DLL_PUBLIC backfill_vector {
     // Accessors.
     reference at(std::size_t pos)
     {
+        if (pos < 0 || pos >= last)
+        {
+            throw std::out_of_range("invalid access of backfill_vector.");
+        }
         return CONTAINER.at(pos);
+    }
+
+    reference operator[](size_t pos)
+    {
+        return CONTAINER[pos];
     }
 
     // Modifiers.
@@ -231,5 +241,5 @@ struct DLL_PUBLIC backfill_vector {
 
 private:
     std::array<_Tp, _Nm>* container;
-    std::size_t           last {};
+    std::size_t           last { 0 };
 };

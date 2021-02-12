@@ -109,7 +109,7 @@ void test_cast_ftoi_speed_perf()
 int test_smallmath_main()
 {
     test_cast_float_to_int_rounds_to_nearest_integer();
-    test_cast_ftoi_speed_perf();
+    // test_cast_ftoi_speed_perf();
     printf("TEST SMALLMATH complete.\n");
     return 0;
 }
