@@ -15,7 +15,7 @@
 #warning Unknown dynamic link import / export semantics.
 #endif
 
-#if defined(DYNAMIC_LIB)
+#if defined(EXPORT_DLL_PUBLIC)
 #define DLL_PUBLIC DLL_EXPORT
 #else
 #define DLL_PUBLIC DLL_IMPORT
