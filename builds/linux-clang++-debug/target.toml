@@ -16,14 +16,13 @@ flags = [
 
 [[builds]]
     name = "essentials"
-    defines = ["DYNAMIC_LIB"]
     buildRule = "dynamiclib"
     outputName = "Essentials"
     srcDirs = ["lib"]
     includePaths = ["include"]
 
 [[builds]]
-    name = "tests"
+    name = "essentialTests"
     buildRule = "exe"
     requires = ["essentials"]
     outputName = "Tests"
