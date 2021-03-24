@@ -1,12 +1,27 @@
 #include "highresclock.h"
+#include "typedefs.h"
+#include <SDL2/SDL_timer.h>
 
-double elapsed_time(HighResClock& clk)
+double
+ElapsedTime(HighResClock& clk)
 {
-    using duration = std::chrono::duration<double>;
-    double time_secs;
+    clk.new_time = SDL_GetPerformanceCounter();
 
-    clk.new_time     = high_res_clock::now();
-    time_secs        = duration(clk.new_time - clk.current_time).count();
-    clk.current_time = clk.new_time;
+    auto time_secs = (clk.new_time - clk.current_time) / (double)SDL_GetPerformanceFrequency();
+
+    clk.current_time = SDL_GetPerformanceCounter();
+
     return time_secs;
+}
+
+uint64
+ElapsedCount(HighResCounter& clk)
+{
+    clk.new_time = SDL_GetPerformanceCounter();
+
+    uint64 delta_count = (clk.new_time - clk.current_time);
+
+    clk.current_time = SDL_GetPerformanceCounter();
+
+    return delta_count;
 }

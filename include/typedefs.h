@@ -1,5 +1,4 @@
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#pragma once
 
 #include <inttypes.h>
 
@@ -15,4 +14,28 @@ using uint64 = uint64_t;
 using byte   = int8_t;
 using ubyte  = uint8_t;
 
-#endif
+constexpr uint64
+Bytes(uint64 value)
+{
+    return value;
+}
+
+constexpr uint64
+Kilobytes(uint64 value)
+{
+    return value * 1024;
+}
+
+constexpr uint64
+Megabytes(uint64 value)
+{
+    return value * 1024 * 1024;
+}
+
+constexpr uint64
+Gigabytes(uint64 value)
+{
+    return value * 1024 * 1024 * 1024;
+}
+
+#define Cast(type, variable) static_cast<type>((variable))

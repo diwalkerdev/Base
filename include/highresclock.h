@@ -1,13 +1,23 @@
 #pragma once
 
 #include "dllexports.h"
-#include <chrono>
+#include "typedefs.h"
+#include <SDL2/SDL.h>
 
-using high_res_clock = std::chrono::high_resolution_clock;
-
-struct HighResClock {
-    high_res_clock::time_point current_time;
-    high_res_clock::time_point new_time;
+struct HighResClock
+{
+    uint64 current_time;
+    uint64 new_time;
 };
 
-DLL_PUBLIC double elapsed_time(HighResClock& clk);
+struct HighResCounter
+{
+    uint64 current_time;
+    uint64 new_time;
+};
+
+public_func double
+ElapsedTime(HighResClock& clk);
+
+public_func uint64
+ElapsedCount(HighResCounter& clk);

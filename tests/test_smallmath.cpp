@@ -7,7 +7,8 @@
 #include <vector>
 
 
-void test_cast_float_to_int_rounds_to_nearest_integer()
+void
+test_cast_float_to_int_rounds_to_nearest_integer()
 {
     int result;
 
@@ -39,14 +40,15 @@ void test_cast_float_to_int_rounds_to_nearest_integer()
 static constexpr size_t Size { 10000000 };
 static constexpr size_t Repeats { 1000 };
 
-void test_cast_ftoi_speed_perf()
+void
+test_cast_ftoi_speed_perf()
 {
     HighResClock hrc;
 
     std::vector<float> numbers;
     numbers.reserve(Size);
     float r;
-    for (int i = 0; i < Size; ++i)
+    for (auto i = 0u; i < Size; ++i)
     {
         r = ((float(rand())) / float(RAND_MAX) * 20) - 10;
         numbers.push_back(r);
@@ -67,37 +69,52 @@ void test_cast_ftoi_speed_perf()
 
 
     // Test run to ensure everything is loaded into cache.
+    printf("test run cast_ftoi\n");
     x = 0;
-    for (int i = 0; i < Size; ++i)
+    for (auto i = 0u; i < Size; ++i)
     {
         x += cast_ftoi(numbers[i]);
     }
 
     // Start
+    printf("starting cast_ftoi\n");
 
-    elapsed_time(hrc);
+    ElapsedTime(hrc);
 
     x = 0;
-    for (int k = 0; k < Repeats; ++k)
+    for (auto k = 0u; k < Repeats; ++k)
     {
-        for (int i = 0; i < Size; ++i)
+        for (auto i = 0u; i < Size; ++i)
         {
             x += cast_ftoi(numbers[i]);
         }
     }
 
-    auto cast_secs = elapsed_time(hrc);
+    auto cast_secs = ElapsedTime(hrc);
+
+    // Test run to ensure everything is loaded into cache.
+    printf("test run cast_ftoi_2\n");
+    y = 0;
+    for (auto i = 0u; i < Size; ++i)
+    {
+        y += cast_ftoi_2(numbers[i]);
+    }
+
+    // Start
+    printf("starting cast_ftoi\n");
+
+    ElapsedTime(hrc);
 
     y = 0;
-    for (int k = 0; k < Repeats; ++k)
+    for (auto k = 0u; k < Repeats; ++k)
     {
-        for (int i = 0; i < Size; ++i)
+        for (auto i = 0u; i < Size; ++i)
         {
             y += cast_ftoi_2(numbers[i]);
         }
     }
 
-    auto ftoi_secs = elapsed_time(hrc);
+    auto ftoi_secs = ElapsedTime(hrc);
 
     assert(x == y);
     printf("Cast time %f\n", cast_secs);
@@ -106,7 +123,8 @@ void test_cast_ftoi_speed_perf()
     printf("Diff %f%%\n", (ftoi_secs / cast_secs) * 100);
 }
 
-int test_smallmath_main()
+int
+test_smallmath_main()
 {
     test_cast_float_to_int_rounds_to_nearest_integer();
     // test_cast_ftoi_speed_perf();

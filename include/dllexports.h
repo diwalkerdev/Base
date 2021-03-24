@@ -20,3 +20,7 @@
 #else
 #define DLL_PUBLIC DLL_IMPORT
 #endif
+
+#define public_struct struct DLL_PUBLIC
+#define public_func DLL_PUBLIC
+#define public_var DLL_PUBLIC

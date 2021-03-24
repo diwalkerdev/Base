@@ -9,7 +9,8 @@
 #define CONTAINER (*container)
 
 template <typename _Tp, std::size_t _Nm>
-struct DLL_PUBLIC backfill_vector {
+struct DLL_PUBLIC backfill_vector
+{
     typedef _Tp                                   value_type;
     typedef value_type*                           pointer;
     typedef const value_type*                     const_pointer;
@@ -241,5 +242,5 @@ struct DLL_PUBLIC backfill_vector {
 
 private:
     std::array<_Tp, _Nm>* container;
-    std::size_t           last { 0 };
+    std::size_t           last{ 0 };
 };
