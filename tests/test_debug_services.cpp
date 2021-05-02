@@ -238,6 +238,8 @@ Test_LoopWhenMemoryExceeded()
     assert(game_struct.x == 4);
     Debug_HandleRecordOrPlaybackFromMemory(rp_struct, &game_struct, false);
     assert(game_struct.x == 5);
+
+    Debug_Free_RecordPlaybackFromMemory(rp_struct);
 }
 
 void

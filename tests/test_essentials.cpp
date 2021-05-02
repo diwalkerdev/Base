@@ -13,6 +13,9 @@ Test_DebugServices();
 extern void
 Test_VirtualMemory();
 
+extern void
+Test_RelativePointers();
+
 int
 main()
 {
@@ -21,4 +24,5 @@ main()
     test_backfill_vector_main();
     Test_DebugServices();
     Test_VirtualMemory();
+    Test_RelativePointers();
 }

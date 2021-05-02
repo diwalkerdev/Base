@@ -5,6 +5,7 @@
 #include "highresclock.h"
 #include "typedefs.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_scancode.h>
 #include <array>
 
 #ifndef EVENT_MANAGER_NUM_TIMERS
@@ -25,48 +26,21 @@ using Event = uint8;
 
 constexpr Event const EVENT_NO_EVENT       = 0;
 constexpr Event const EVENT_QUIT           = 1;
-constexpr Event const EVENT_RENDER         = 2;
-constexpr Event const EVENT_SIMULATION     = 3;
-constexpr Event const EVENT_WINDOW_RESIZED = 4;
-constexpr Event const EVENT_WINDOW_MOVED   = 5;
-constexpr Event const EVENT_SIZE           = 6; // Must be last.
+constexpr Event const EVENT_RENDER                = 2;
+constexpr Event const EVENT_SIMULATION            = 3;
+constexpr Event const EVENT_WINDOW_RESIZED        = 4;
+constexpr Event const EVENT_WINDOW_MOVED          = 5;
+constexpr Event const EVENT_TOGGLE_RECORDPLAYBACK = 6;
+constexpr Event const EVENT_SIZE           = 7; // Must be last.
 
 using EventTable = std::array<Event, EVENT_SIZE>;
-
-constexpr int SCANCODE_TABLE[] = {
-    SDL_SCANCODE_A,
-    SDL_SCANCODE_B,
-    SDL_SCANCODE_C,
-    SDL_SCANCODE_D,
-    SDL_SCANCODE_E,
-    SDL_SCANCODE_F,
-    SDL_SCANCODE_G,
-    SDL_SCANCODE_H,
-    SDL_SCANCODE_I,
-    SDL_SCANCODE_J,
-    SDL_SCANCODE_K,
-    SDL_SCANCODE_L,
-    SDL_SCANCODE_M,
-    SDL_SCANCODE_N,
-    SDL_SCANCODE_O,
-    SDL_SCANCODE_P,
-    SDL_SCANCODE_Q,
-    SDL_SCANCODE_R,
-    SDL_SCANCODE_S,
-    SDL_SCANCODE_T,
-    SDL_SCANCODE_U,
-    SDL_SCANCODE_V,
-    SDL_SCANCODE_W,
-    SDL_SCANCODE_X,
-    SDL_SCANCODE_Y,
-    SDL_SCANCODE_Z
-};
 
 using KeyState = int8;
 
 constexpr KeyState const KEY_RELEASED = 0;
 constexpr KeyState const KEY_PRESSED  = 1;
 constexpr KeyState const KEY_HELD     = 2;
+
 
 public_struct EventTimer
 {
@@ -75,11 +49,23 @@ public_struct EventTimer
     Event  event;
 };
 
+#define compile_u8(name, value) constexpr uint8 const(name) = (value)
+#define compile_float(name, value) constexpr float const(name) = (value)
+compile_u8(KEY_BINDING_LCTRL, 0x01);
+compile_u8(KEY_BINDING_RCTRL, 0x02);
+compile_u8(KEY_BINDING_LALT, 0x04);
+compile_u8(KEY_BINDING_RALT, 0x08);
+compile_u8(KEY_BINDING_LGUI, 0x10);
+compile_u8(KEY_BINDING_RGUI, 0x20);
+
 public_struct KeyBinding
 {
-    char     ch;
-    KeyState state;
+    SDL_Scancode scan_code;
+    KeyState     state;
+    Event        event;
+    uint8        flags;
 };
+
 
 public_struct EventManager
 {
@@ -91,26 +77,107 @@ public_struct EventManager
     Array<KeyBinding, EVENT_MANAGER_NUM_KEYS>   key_bindings;
 };
 
-public_func EventManager
-Make_EventManager(float render_fps, float sim_fps);
 
-public_func Event
-Event_ConvertFromSDLScancode(uint8 const* scan_state);
+template <size_t Nm>
+void
+EventManager_AddKeyBinding(Array<KeyBinding, Nm>& key_bindings, SDL_Scancode key, Event event, uint8 flags = 0)
+{
+    key_bindings.reserve(1);
+
+    key_bindings.back() = { .scan_code = key,
+                            .state     = KEY_RELEASED,
+                            .event     = event,
+                            .flags     = flags };
+}
+
+
+public_func void
+EventManager_AddKeyBinding(EventManager& event_manager, SDL_Scancode key, Event event, uint8 flags = 0);
+
+
+template <size_t Nm>
+KeyBinding*
+EventManager_FindKeyBinding(Array<KeyBinding, Nm>& key_bindings, char key)
+{
+    for (auto& binding : key_bindings)
+    {
+        if (binding.scan_code == key)
+        {
+            return &binding;
+        }
+    }
+    return nullptr;
+}
+
+
+public_func KeyBinding*
+            EventManager_FindKeyBinding(EventManager& event_manager, char key);
+
+
+public_func void
+EventManager_AddTimer(EventManager& event_manager, float fps, Event event);
+
 
 public_func Event
 Event_ConvertFromSDLEvent(SDL_Event& event);
 
+
 public_func void
 Event_UpdateKeyState(KeyState& state, int current_value);
+
+template <size_t Nm>
+void
+Event_PollSDLKeyboardEvents(Array<KeyBinding, Nm>& key_bindings, EventTable& event_table)
+{
+    uint8 const* keyboard_state = SDL_GetKeyboardState(NULL);
+
+    auto const lalt  = keyboard_state[SDL_SCANCODE_LALT];
+    auto const ralt  = keyboard_state[SDL_SCANCODE_RALT];
+    auto const lctrl = keyboard_state[SDL_SCANCODE_LCTRL];
+    auto const rctrl = keyboard_state[SDL_SCANCODE_RCTRL];
+    auto const lgui  = keyboard_state[SDL_SCANCODE_LGUI];
+    auto const rgui  = keyboard_state[SDL_SCANCODE_RGUI];
+
+    for (auto& binding : key_bindings)
+    {
+        auto const key_state = keyboard_state[binding.scan_code];
+
+        if ((binding.flags & KEY_BINDING_LCTRL && !lctrl) || (binding.flags & KEY_BINDING_RCTRL && !rctrl))
+        {
+            continue;
+        }
+
+        if ((binding.flags & KEY_BINDING_LALT && !lalt) || (binding.flags & KEY_BINDING_RALT && !ralt))
+        {
+            continue;
+        }
+
+        if ((binding.flags & KEY_BINDING_LGUI && !lgui) || (binding.flags & KEY_BINDING_RGUI && !rgui))
+        {
+            continue;
+        }
+
+        Event_UpdateKeyState(binding.state, key_state);
+
+        if (binding.event != EVENT_NO_EVENT && binding.state == KEY_PRESSED)
+        {
+            event_table[binding.event] += 1;
+        }
+    }
+}
+
 
 public_func void
 Event_PollSDLEvents(EventManager& event_manager);
 
+
 public_func void
 Event_PollTimeEvents(EventManager& event_manager);
 
+
 public_func void
 Event_Poll(EventManager& event_manager);
+
 
 public_func int
 Event_QueryAndReset(EventTable& table, int event, int clear_value);

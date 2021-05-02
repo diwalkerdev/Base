@@ -1,15 +1,31 @@
 #include "application.h"
 
 
-Event
-Event_ConvertFromSDLScancode(uint8 const* scan_state)
+void
+EventManager_AddKeyBinding(EventManager& event_manager, SDL_Scancode key, Event event, uint8 flags)
 {
-    if (scan_state[SDL_SCANCODE_ESCAPE])
-    {
-        return EVENT_QUIT;
-    }
-    return EVENT_NO_EVENT;
+    EventManager_AddKeyBinding(event_manager.key_bindings, key, event, flags);
 }
+
+
+KeyBinding*
+EventManager_FindKeyBinding(EventManager& event_manager, char key)
+{
+    return EventManager_FindKeyBinding(event_manager.key_bindings, key);
+}
+
+
+void
+EventManager_AddTimer(EventManager& event_manager, float fps, Event event)
+{
+    auto& timers = event_manager.timers;
+    Array_Reserve(timers);
+
+    timers.back() = { .counter = 0,
+                      .count   = Cast(uint64, (SDL_GetPerformanceFrequency() / fps)),
+                      .event   = event };
+}
+
 
 Event
 Event_ConvertFromSDLEvent(SDL_Event& event)
@@ -65,38 +81,19 @@ Event_UpdateKeyState(KeyState& state, int current_value)
     }
 }
 
+
 void
 Event_PollSDLEvents(EventManager& event_manager)
 {
-    uint8 const* keyboard_state = SDL_GetKeyboardState(NULL);
-    // Process codes that become events, for example escape becomes QUIT.
+    SDL_Event sdl_event;
+    while (SDL_PollEvent(&sdl_event) != 0)
     {
-        Event event = Event_ConvertFromSDLScancode(keyboard_state);
+        Event event = Event_ConvertFromSDLEvent(sdl_event);
 
         event_manager.event_table[event] = 1;
     }
-
-    // Process regular keys.
-    {
-        for (auto& binding : event_manager.key_bindings)
-        {
-            auto scan_code = SCANCODE_TABLE[binding.ch - 'a'];
-            auto key_state = keyboard_state[scan_code];
-
-            Event_UpdateKeyState(binding.state, key_state);
-        }
-    }
-
-    {
-        SDL_Event sdl_event;
-        while (SDL_PollEvent(&sdl_event) != 0)
-        {
-            Event event = Event_ConvertFromSDLEvent(sdl_event);
-
-            event_manager.event_table[event] = 1;
-        }
-    }
 }
+
 
 void
 Event_PollTimeEvents(EventManager& event_manager)
@@ -104,7 +101,7 @@ Event_PollTimeEvents(EventManager& event_manager)
     auto dcount          = ElapsedCount(event_manager.clk);
     event_manager.dcount = dcount;
 
-    for (auto timer : event_manager.timers)
+    for (auto& timer : event_manager.timers)
     {
         timer.counter += dcount;
         if (timer.counter > timer.count)
@@ -118,6 +115,7 @@ Event_PollTimeEvents(EventManager& event_manager)
 void
 Event_Poll(EventManager& event_manager)
 {
+    Event_PollSDLKeyboardEvents(event_manager.key_bindings, event_manager.event_table);
     Event_PollSDLEvents(event_manager);
     Event_PollTimeEvents(event_manager);
 }
@@ -208,11 +206,13 @@ Window_HandleEvents(Window& window, EventTable& events)
     {
         printf("resized\n");
         SDL_GetWindowSize(window.window, &window.w, &window.h);
+        // events[EVENT_RENDER] += 1;
     }
     if (Event_QueryAndReset(events, EVENT_WINDOW_MOVED, 0))
     {
         SDL_GetWindowPosition(window.window, &window.x, &window.y);
         printf("moved %d %d\n", window.x, window.y);
+        // events[EVENT_RENDER] += 1;
     }
 }
 

@@ -42,5 +42,9 @@ Test_Array()
         test_value += 1;
     }
 
+
+    data.back() = 3;
+    assert(data.back() == 3);
+
     assert(!data.reserve(1));
 }

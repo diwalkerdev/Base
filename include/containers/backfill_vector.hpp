@@ -244,3 +244,5 @@ private:
     std::array<_Tp, _Nm>* container;
     std::size_t           last{ 0 };
 };
+
+#undef CONTAINER

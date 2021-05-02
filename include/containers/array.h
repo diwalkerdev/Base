@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "dllexports.h"
@@ -25,7 +24,7 @@ struct DLL_PUBLIC Array
 
     // Modifiers
     //
-    bool reserve(int n)
+    bool reserve(std::size_t n)
     {
         auto size = last + n;
         if (size > Nm)
@@ -143,28 +142,28 @@ struct DLL_PUBLIC Array
     }
 
     /// back - returns the element at the back of the container.
-    constexpr auto
+    constexpr auto&
     back() noexcept
     {
-        return *(end() - 1);
+        return CONTAINER[last - 1];
     }
 
-    constexpr auto
+    constexpr auto&
     back() const noexcept
     {
-        return *(cend() - 1);
+        return CONTAINER[last - 1];
     }
 
-    constexpr auto
+    constexpr auto&
     cback() const noexcept
     {
-        return *(cend() - 1);
+        return CONTAINER[last - 1];
     }
 };
 
 template <typename Tp, std::size_t Size>
 bool
-Array_Reserve(Array<Tp, Size>& array, int n)
+Array_Reserve(Array<Tp, Size>& array, std::size_t n = 1)
 {
     auto size = array.last + n;
     if (size > Size)
@@ -203,3 +202,5 @@ Array_Full(Array<Tp, Size> const& array) noexcept
 {
     return array.last == Size;
 }
+
+#undef CONTAINER

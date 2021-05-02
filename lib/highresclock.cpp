@@ -14,6 +14,7 @@ ElapsedTime(HighResClock& clk)
     return time_secs;
 }
 
+
 uint64
 ElapsedCount(HighResCounter& clk)
 {
@@ -24,4 +25,31 @@ ElapsedCount(HighResCounter& clk)
     clk.current_time = SDL_GetPerformanceCounter();
 
     return delta_count;
+}
+
+
+CounterTimer
+CounterTimer_Make(uint64 event_count)
+{
+    CounterTimer timer{ .event_count   = event_count,
+                        .current_count = 0 };
+    ElapsedCount(timer.counter);
+    return timer;
+}
+
+
+bool
+Timer_Poll(CounterTimer& timer)
+{
+    timer.current_count += ElapsedCount(timer.counter);
+
+    if (timer.current_count > timer.event_count)
+    {
+        timer.current_count -= timer.event_count;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
