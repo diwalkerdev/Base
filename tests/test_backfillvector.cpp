@@ -296,7 +296,7 @@ void test_back_accesses_correct_element()
     assert(bv[1] == 77);
 }
 
-int test_backfill_vector_main()
+void test_backfill_vector_main()
 {
     test_starts_empty();
     test_size_increases_when_items_allocated();
@@ -317,5 +317,4 @@ int test_backfill_vector_main()
     test_accessing_elements_before_allocation_throws();
     test_back_accesses_correct_element();
     printf("TEST BACKFILL complete.\n");
-    return 0;
 }

@@ -1,7 +1,13 @@
 #include "dllloader.h"
+
+#if defined(_MSC_VER)
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
+
 #include <cassert>
-#include <filesystem>
+
 
 SharedLibrary
 Make_SharedLibrary(char const* library_path)
@@ -17,6 +23,7 @@ Make_SharedLibrary(char const* library_path)
     return lib;
 }
 
+
 int
 SharedLibraryReload(SharedLibrary& lib, bool force)
 {
@@ -27,16 +34,23 @@ SharedLibraryReload(SharedLibrary& lib, bool force)
         return 0;
     }
 
-    char const* library_name = lib.path.filename().c_str();
-    printf("Loading library %s\n", library_name);
-
     if (lib.ptr != nullptr)
     {
         SDL_UnloadObject(&lib.ptr);
         lib.ptr = nullptr;
     }
 
-    lib.ptr = SDL_LoadObject(library_name);
+#if defined(_MSC_VER)
+#include <SDL.h>
+    // TODO: need to provide platform versions of these functions.
+    lib.ptr = nullptr;
+#else
+#include <SDL2/SDL.h>
+    char const* library_name = lib.path.filename().c_str();
+    printf("Loading library %s\n", library_name);
+    lib.ptr = SDL_LoadObject(library_name.c_str());
+#endif
+
     assert(lib.ptr != nullptr);
 
     return 0;

@@ -4,8 +4,13 @@
 #include "dllexports.h"
 #include "highresclock.h"
 #include "typedefs.h"
+#if defined(_MSC_VER)
+#include <SDL.h>
+#include <SDL_scancode.h>
+#else
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_scancode.h>
+#endif
 #include <array>
 
 #ifndef EVENT_MANAGER_NUM_TIMERS

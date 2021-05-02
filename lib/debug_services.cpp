@@ -1,5 +1,9 @@
 #include "debug_services.h"
+#if defined(_MSC_VER)
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 #include <cassert>
 
 Debug_TimeBlockStore* global_debug_time_block_store{ nullptr };
@@ -46,7 +50,7 @@ Debug_PrintTimeBlockRecords(Debug_TimeBlockStore* store)
 
             if (count > 0)
             {
-                printf("\t[%d] %45s  LN:%d  time:%f  Count:%lu  cycles:%lu\n",
+                printf("\t[%d] %45s  LN:%d  time:%f  Count:%llu  cycles:%llu\n",
                        i,
                        record.func_name,
                        record.line_number,

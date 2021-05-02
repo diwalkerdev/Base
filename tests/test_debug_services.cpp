@@ -1,5 +1,9 @@
 #include "debug_services.h"
+#if defined(_MSC_VER)
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 #include <cassert>
 #include <limits.h>
 #include <stdio.h>
@@ -198,7 +202,7 @@ Test_RecordAndPlaybackFromMemory()
     }
 }
 
-#define PRINT_FUNC_NAME(...) printf("%s...\n", __FILE_NAME__);
+#define PRINT_FUNC_NAME(...) printf("%s...\n", __FUNCTION__);
 
 void
 Test_LoopWhenMemoryExceeded()
@@ -245,6 +249,7 @@ Test_LoopWhenMemoryExceeded()
 void
 Test_DebugServices()
 {
+    printf("TEST DEBUG_SERVICES START...\n");
     Test_TimeBlockUsageExample();
     Test_RecordAndPlaybackFromFile();
     Test_RecordAndPlaybackFromMemory();

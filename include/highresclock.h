@@ -2,7 +2,11 @@
 
 #include "dllexports.h"
 #include "typedefs.h"
+#if defined(_MSC_VER)
+#include <SDL.h>
+#else
 #include <SDL2/SDL.h>
+#endif
 
 struct HighResClock
 {

@@ -1,6 +1,11 @@
 #include "highresclock.h"
 #include "typedefs.h"
+#if defined(_MSC_VER)
+#include <SDL_timer.h>
+#else
 #include <SDL2/SDL_timer.h>
+#endif
+
 
 double
 ElapsedTime(HighResClock& clk)

@@ -22,7 +22,7 @@ main()
     test_smallmath_main();
     Test_Array();
     test_backfill_vector_main();
-    Test_DebugServices();
     Test_VirtualMemory();
+    Test_DebugServices();
     Test_RelativePointers();
 }

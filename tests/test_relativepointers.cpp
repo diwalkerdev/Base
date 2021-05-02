@@ -1,9 +1,10 @@
-#include "linux/platform_linux.h"
+#include "linux/platform.h"
 #include "typedefs.h"
 #include <array>
 #include <cassert>
 #include <cstdio>
 #include <limits>
+#include <concepts>
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -143,7 +144,7 @@ Test_CanDeReferenceDataInBlock()
     auto  OneKBytes = Kilobytes(1);
     void* memory;
     {
-        memory = Linux_AllocateVirtualMemory(OneKBytes);
+        memory = Platform_AllocateVirtualMemory(OneKBytes);
         assert(memory != 0);
     }
 
@@ -172,7 +173,7 @@ Test_CanDeReferenceDataInBlock()
     ptr.Set(&block[3]);
     assert(*ptr == 3);
 
-    Linux_FreeVirtualMemory(memory, OneKBytes);
+    Platform_FreeVirtualMemory(memory, OneKBytes);
 }
 
 void
@@ -255,7 +256,7 @@ Test_AssignmentAndDeferencingOperators()
     auto  OneKBytes = Kilobytes(1);
     void* memory;
     {
-        memory = Linux_AllocateVirtualMemory(OneKBytes);
+        memory = Platform_AllocateVirtualMemory(OneKBytes);
         assert(memory != 0);
     }
 

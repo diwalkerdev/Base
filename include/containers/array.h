@@ -5,8 +5,8 @@
 
 #define CONTAINER (container)
 
-template <typename _Tp, std::size_t Nm>
-struct DLL_PUBLIC Array
+template <typename _Tp, size_t Nm>
+struct Array
 {
     typedef _Tp               value_type;
     typedef value_type*       pointer;
@@ -15,16 +15,16 @@ struct DLL_PUBLIC Array
     typedef const value_type& const_reference;
     typedef value_type*       iterator;
     typedef const value_type* const_iterator;
-    typedef std::ptrdiff_t    difference_type;
+    typedef ptrdiff_t         difference_type;
 
     // Data members
     //
     value_type  container[Nm];
-    std::size_t last{ 0 };
+    size_t last{ 0 };
 
     // Modifiers
     //
-    bool reserve(std::size_t n)
+    bool reserve(size_t n)
     {
         auto size = last + n;
         if (size > Nm)
@@ -119,10 +119,10 @@ struct DLL_PUBLIC Array
 
     // Capacity Functions.
     //
-    constexpr std::size_t
+    constexpr size_t
     size() const noexcept { return last; }
 
-    constexpr std::size_t
+    constexpr size_t
     capacity() const noexcept { return Nm; }
 
     constexpr bool
@@ -135,7 +135,7 @@ struct DLL_PUBLIC Array
     // Access Functions.
     //
     reference
-    operator[](std::size_t pos)
+    operator[](size_t pos)
     {
         assert(pos < Nm);
         return CONTAINER[pos];
@@ -161,9 +161,9 @@ struct DLL_PUBLIC Array
     }
 };
 
-template <typename Tp, std::size_t Size>
+template <typename Tp, size_t Size>
 bool
-Array_Reserve(Array<Tp, Size>& array, std::size_t n = 1)
+Array_Reserve(Array<Tp, Size>& array, size_t n = 1)
 {
     auto size = array.last + n;
     if (size > Size)
@@ -175,28 +175,28 @@ Array_Reserve(Array<Tp, Size>& array, std::size_t n = 1)
     return true;
 }
 
-template <typename Tp, std::size_t Size>
-constexpr std::size_t
+template <typename Tp, size_t Size>
+constexpr size_t
 Array_Size(Array<Tp, Size> const& array) noexcept
 {
     return array.last;
 }
 
-template <typename Tp, std::size_t Size>
-constexpr std::size_t
+template <typename Tp, size_t Size>
+constexpr size_t
 Array_Capacity(Array<Tp, Size> const&) noexcept
 {
     return Size;
 }
 
-template <typename Tp, std::size_t Size>
+template <typename Tp, size_t Size>
 constexpr bool
 Array_Empty(Array<Tp, Size> const& array) noexcept
 {
     return array.last == 0;
 }
 
-template <typename Tp, std::size_t Size>
+template <typename Tp, size_t Size>
 constexpr bool
 Array_Full(Array<Tp, Size> const& array) noexcept
 {

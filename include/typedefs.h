@@ -11,8 +11,6 @@ using uint16 = uint16_t;
 using uint32 = uint32_t;
 using uint64 = uint64_t;
 
-using byte   = int8_t;
-using ubyte  = uint8_t;
 
 constexpr uint64
 Bytes(uint64 value)
@@ -20,11 +18,13 @@ Bytes(uint64 value)
     return value;
 }
 
+
 constexpr uint64
 Kilobytes(uint64 value)
 {
     return value * 1024;
 }
+
 
 constexpr uint64
 Megabytes(uint64 value)
@@ -32,10 +32,12 @@ Megabytes(uint64 value)
     return value * 1024 * 1024;
 }
 
+
 constexpr uint64
 Gigabytes(uint64 value)
 {
     return value * 1024 * 1024 * 1024;
 }
+
 
 #define Cast(type, variable) static_cast<type>((variable))

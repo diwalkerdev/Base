@@ -123,11 +123,11 @@ test_cast_ftoi_speed_perf()
     printf("Diff %f%%\n", (ftoi_secs / cast_secs) * 100);
 }
 
-int
+
+void
 test_smallmath_main()
 {
     test_cast_float_to_int_rounds_to_nearest_integer();
     // test_cast_ftoi_speed_perf();
     printf("TEST SMALLMATH complete.\n");
-    return 0;
 }

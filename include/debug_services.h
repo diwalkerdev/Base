@@ -1,9 +1,13 @@
 #pragma once
 
 #include "dllexports.h"
-#include "linux/platform_linux.h"
+#include "linux/platform.h"
 #include "typedefs.h"
+#if defined(_MSC_VER)
+#include <SDL_rwops.h>
+#else
 #include <SDL2/SDL_rwops.h>
+#endif
 #include <array>
 #include <atomic>
 #include <cassert>
@@ -168,7 +172,7 @@ Debug_Make_RecordPlaybackFromMemory(uint64          memory_size,
     rp_struct.game_mode      = DEBUG_GAME_MODE_NORMAL;
     rp_struct.record_mode    = record_mode;
     rp_struct.size           = memory_size;
-    rp_struct.memory         = Linux_AllocateVirtualMemory(rp_struct.size);
+    rp_struct.memory         = Platform_AllocateVirtualMemory(rp_struct.size);
     rp_struct.end            = 0;
     rp_struct.memory_wrapped = false;
     rp_struct.io             = nullptr;
@@ -183,7 +187,7 @@ Debug_Free_RecordPlaybackFromMemory(Debug_RecordPlaybackFromMemory& rp_struct)
         SDL_RWclose(rp_struct.io);
     }
 
-    Linux_FreeVirtualMemory(rp_struct.memory, rp_struct.size);
+    Platform_FreeVirtualMemory(rp_struct.memory, rp_struct.size);
 }
 
 template <typename Tp>

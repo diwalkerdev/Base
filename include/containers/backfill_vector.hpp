@@ -5,11 +5,12 @@
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
+#include <algorithm>
 
 #define CONTAINER (*container)
 
 template <typename _Tp, std::size_t _Nm>
-struct DLL_PUBLIC backfill_vector
+struct backfill_vector
 {
     typedef _Tp                                   value_type;
     typedef value_type*                           pointer;

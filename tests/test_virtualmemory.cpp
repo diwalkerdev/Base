@@ -1,4 +1,4 @@
-#include "linux/platform_linux.h"
+#include "linux/platform.h"
 #include <array>
 #include <cassert>
 #include <cstdio>
@@ -19,7 +19,7 @@ Test_VirtualMemory()
     {
         printf("CHECK - Can allocate virtual memory...\n");
 
-        memory = Linux_AllocateVirtualMemory(FourKbytes);
+        memory = Platform_AllocateVirtualMemory(FourKbytes);
         printf("Address: %p\n", memory);
         assert(memory != 0);
     }
@@ -35,9 +35,9 @@ Test_VirtualMemory()
         data->block[2] = 2;
         data->block[3] = 3;
 
-        printf("X         : %lu\n", data->x);
+        printf("X         : %llu\n", data->x);
         printf("X Address : %p\n", (void*)data->px);
-        printf("Block[1]  : %lu\n", data->block[1]);
+        printf("Block[1]  : %llu\n", data->block[1]);
 
         assert((void*)data->px == memory);
         assert(data->block[1] == 1);
@@ -49,9 +49,9 @@ Test_VirtualMemory()
 
         memset(memory, 0, sizeof(DummyData));
 
-        printf("X         : %lu\n", data->x);
+        printf("X         : %llu\n", data->x);
         printf("X Address : %p\n", (void*)data->px);
-        printf("Block[1]  : %lu\n", data->block[1]);
+        printf("Block[1]  : %llu\n", data->block[1]);
 
         assert((void*)data->px == 0);
         assert(data->block[1] == 0);
@@ -66,15 +66,15 @@ Test_VirtualMemory()
         data->block[2] = copy.block[2];
         data->block[3] = copy.block[3];
 
-        printf("X         : %lu\n", data->x);
+        printf("X         : %llu\n", data->x);
         printf("X Address : %p\n", (void*)data->px);
-        printf("Block[1]  : %lu\n", data->block[1]);
+        printf("Block[1]  : %llu\n", data->block[1]);
 
         assert((void*)data->px == memory);
         assert(data->block[1] == 1);
     }
 
 
-    Linux_FreeVirtualMemory(memory, FourKbytes);
+    Platform_FreeVirtualMemory(memory, FourKbytes);
     printf("TEST Test_VirtualMemory COMPLETE\n");
 }

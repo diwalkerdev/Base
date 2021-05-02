@@ -1,7 +1,9 @@
 #pragma once
+
 #include "typedefs.h"
 #include <cassert>
 #include <sys/mman.h>
+
 
 inline void*
 Linux_AllocateVirtualMemory(uint64 size, uint64 start_addr = 0)
@@ -16,6 +18,7 @@ Linux_AllocateVirtualMemory(uint64 size, uint64 start_addr = 0)
     assert(region);
     return region;
 }
+
 
 inline void
 Linux_FreeVirtualMemory(void* addr, uint64 size)
