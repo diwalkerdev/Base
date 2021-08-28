@@ -11,7 +11,9 @@ EventManager_AddKeyBinding(EventManager& event_manager, SDL_Scancode key, Event 
 KeyBinding*
 EventManager_FindKeyBinding(EventManager& event_manager, char key)
 {
-    return EventManager_FindKeyBinding(event_manager.key_bindings, key);
+    auto* binding = EventManager_FindKeyBinding(event_manager.key_bindings, key);
+    assert(binding != nullptr);
+    return binding;
 }
 
 
@@ -100,12 +102,21 @@ Event_PollTimeEvents(EventManager& event_manager)
 {
     auto dcount          = ElapsedCount(event_manager.clk);
     event_manager.dcount = dcount;
+    // printf("dcount: %lu\n", dcount);
 
     for (auto& timer : event_manager.timers)
     {
         timer.counter += dcount;
-        if (timer.counter > timer.count)
+
+        // The while loop is required, because when we come out of a record/playback loop,
+        // we will get a big dcount, for reasons I don't know. However, the impact is if
+        // we have an if statement, then timer.counter will be greater than timer.count for
+        // a number if loops so we get several simulation events in a row. Having the while
+        // loop eats up the excess time, and this is indicated to higher level code by
+        // incrementing the counter more than once.
+        while (timer.counter > timer.count)
         {
+            // printf("#\n");
             timer.counter -= timer.count;
             event_manager.event_table[timer.event] += 1;
         }
@@ -120,6 +131,14 @@ Event_Poll(EventManager& event_manager)
     Event_PollTimeEvents(event_manager);
 }
 
+
+int
+Event_QueryAndReset(EventManager& event_manager, int event, int clear_value)
+{
+    return Event_QueryAndReset(event_manager.event_table, event, clear_value);
+}
+
+
 int
 Event_QueryAndReset(EventTable& table, int event, int clear_value)
 {
@@ -128,11 +147,9 @@ Event_QueryAndReset(EventTable& table, int event, int clear_value)
     return result;
 }
 
-Window
-Make_Window(int screen_width, int screen_height, bool hw_acceleration)
+void
+Window_Init(Window& the_window, int screen_width, int screen_height, bool hw_acceleration)
 {
-
-    Window      the_window;
     SDL_Window* window;
     {
         window = SDL_CreateWindow("Window Resizing",
@@ -148,7 +165,7 @@ Make_Window(int screen_width, int screen_height, bool hw_acceleration)
                          "Could not create window: %s.\n",
                          SDL_GetError());
             the_window.error = SYS_CREATE_WINDOW_ERROR;
-            return the_window;
+            return;
         }
     }
 
@@ -167,7 +184,7 @@ Make_Window(int screen_width, int screen_height, bool hw_acceleration)
                          "Could not create renderer: %s.\n",
                          SDL_GetError());
             the_window.error = SYS_CREATE_RENDERER_ERROR;
-            return the_window;
+            return;
         }
     }
 
@@ -175,7 +192,6 @@ Make_Window(int screen_width, int screen_height, bool hw_acceleration)
     the_window.renderer = renderer;
     SDL_GetWindowSize(the_window.window, &the_window.w, &the_window.h);
     SDL_GetWindowPosition(the_window.window, &the_window.x, &the_window.y);
-    return the_window;
 }
 
 void

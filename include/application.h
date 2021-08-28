@@ -29,14 +29,14 @@ constexpr SystemError const SYS_CREATE_RENDERER_ERROR = 2;
 // TODO: Event system needs to be easily extendable.
 using Event = uint8;
 
-constexpr Event const EVENT_NO_EVENT       = 0;
-constexpr Event const EVENT_QUIT           = 1;
+constexpr Event const EVENT_NO_EVENT              = 0;
+constexpr Event const EVENT_QUIT                  = 1;
 constexpr Event const EVENT_RENDER                = 2;
 constexpr Event const EVENT_SIMULATION            = 3;
 constexpr Event const EVENT_WINDOW_RESIZED        = 4;
 constexpr Event const EVENT_WINDOW_MOVED          = 5;
 constexpr Event const EVENT_TOGGLE_RECORDPLAYBACK = 6;
-constexpr Event const EVENT_SIZE           = 7; // Must be last.
+constexpr Event const EVENT_SIZE                  = 7; // Must be last.
 
 using EventTable = std::array<Event, EVENT_SIZE>;
 
@@ -55,6 +55,7 @@ public_struct EventTimer
 };
 
 #define compile_u8(name, value) constexpr uint8 const(name) = (value)
+#define compile_u64(name, value) constexpr uint64 const(name) = (value)
 #define compile_float(name, value) constexpr float const(name) = (value)
 compile_u8(KEY_BINDING_LCTRL, 0x01);
 compile_u8(KEY_BINDING_RCTRL, 0x02);
@@ -76,7 +77,7 @@ public_struct EventManager
 {
     HighResCounter clk;
     uint64         dcount;
-    EventTable     event_table{ 0 };
+    EventTable     event_table { 0 };
 
     Array<EventTimer, EVENT_MANAGER_NUM_TIMERS> timers;
     Array<KeyBinding, EVENT_MANAGER_NUM_KEYS>   key_bindings;
@@ -134,6 +135,7 @@ template <size_t Nm>
 void
 Event_PollSDLKeyboardEvents(Array<KeyBinding, Nm>& key_bindings, EventTable& event_table)
 {
+    SDL_PumpEvents();
     uint8 const* keyboard_state = SDL_GetKeyboardState(NULL);
 
     auto const lalt  = keyboard_state[SDL_SCANCODE_LALT];
@@ -185,6 +187,10 @@ Event_Poll(EventManager& event_manager);
 
 
 public_func int
+Event_QueryAndReset(EventManager& event_manager, int event, int clear_value);
+
+
+public_func int
 Event_QueryAndReset(EventTable& table, int event, int clear_value);
 
 
@@ -197,8 +203,8 @@ public_struct Window
     SystemError   error = SYS_NO_ERROR;
 };
 
-public_func Window
-Make_Window(int screen_width, int screen_height, bool hw_acceleration);
+public_func void
+Window_Init(Window& window, int screen_width, int screen_height, bool hw_acceleration);
 
 public_func void
 Free_Window(Window& window);

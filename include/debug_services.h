@@ -91,7 +91,7 @@ Debug_TimeBlockRecord_Cycles(Debug_TimeBlockRecord const& record)
 #define DEBUG_PRINT_TIME_BLOCK_RECORDS(...) Debug_PrintTimeBlockRecords(global_debug_time_block_store)
 #define DEBUG_RESET_TIME_BLOCK_RECORDS(...) Debug_ResetTimeBlockRecords(global_debug_time_block_store)
 
-#define TIME_BLOCK _TIME_BLOCK(global_debug_time_block_store, __FILE_NAME__, __PRETTY_FUNCTION__, __LINE__, __COUNTER__)
+#define TIME_BLOCK _TIME_BLOCK(global_debug_time_block_store, __FILE__, __PRETTY_FUNCTION__, __LINE__, __COUNTER__)
 
 //////////////////////////////////////////////////////////////////////////////
 

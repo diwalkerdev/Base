@@ -48,7 +48,7 @@ SharedLibraryReload(SharedLibrary& lib, bool force)
 #include <SDL2/SDL.h>
     char const* library_name = lib.path.filename().c_str();
     printf("Loading library %s\n", library_name);
-    lib.ptr = SDL_LoadObject(library_name.c_str());
+    lib.ptr = SDL_LoadObject(library_name);
 #endif
 
     assert(lib.ptr != nullptr);

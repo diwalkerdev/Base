@@ -2,6 +2,7 @@
 
 #include "dllexports.h"
 #include <cassert>
+#include <cstddef>
 
 #define CONTAINER (container)
 

@@ -35,9 +35,9 @@ Test_VirtualMemory()
         data->block[2] = 2;
         data->block[3] = 3;
 
-        printf("X         : %llu\n", data->x);
+        printf("X         : %lu\n", data->x);
         printf("X Address : %p\n", (void*)data->px);
-        printf("Block[1]  : %llu\n", data->block[1]);
+        printf("Block[1]  : %lu\n", data->block[1]);
 
         assert((void*)data->px == memory);
         assert(data->block[1] == 1);
@@ -49,9 +49,9 @@ Test_VirtualMemory()
 
         memset(memory, 0, sizeof(DummyData));
 
-        printf("X         : %llu\n", data->x);
+        printf("X         : %lu\n", data->x);
         printf("X Address : %p\n", (void*)data->px);
-        printf("Block[1]  : %llu\n", data->block[1]);
+        printf("Block[1]  : %lu\n", data->block[1]);
 
         assert((void*)data->px == 0);
         assert(data->block[1] == 0);
@@ -66,9 +66,9 @@ Test_VirtualMemory()
         data->block[2] = copy.block[2];
         data->block[3] = copy.block[3];
 
-        printf("X         : %llu\n", data->x);
+        printf("X         : %lu\n", data->x);
         printf("X Address : %p\n", (void*)data->px);
-        printf("Block[1]  : %llu\n", data->block[1]);
+        printf("Block[1]  : %lu\n", data->block[1]);
 
         assert((void*)data->px == memory);
         assert(data->block[1] == 1);

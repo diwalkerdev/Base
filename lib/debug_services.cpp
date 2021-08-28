@@ -50,7 +50,7 @@ Debug_PrintTimeBlockRecords(Debug_TimeBlockStore* store)
 
             if (count > 0)
             {
-                printf("\t[%d] %45s  LN:%d  time:%f  Count:%llu  cycles:%llu\n",
+                printf("\t[%d] %45s  LN:%d  time:%f  Count:%lu  cycles:%lu\n",
                        i,
                        record.func_name,
                        record.line_number,
