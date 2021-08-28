@@ -1,8 +1,8 @@
 #pragma once
 
-#include "dllexports.h"
-#include "linux/platform.h"
-#include "typedefs.h"
+#include "Base/dllexports.h"
+#include "Base/platform/platform.h"
+#include "Base/typedefs.h"
 #if defined(_MSC_VER)
 #include <SDL_rwops.h>
 #else

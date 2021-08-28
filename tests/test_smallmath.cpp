@@ -1,6 +1,6 @@
-#include "highresclock.h"
-#include "smallmath.h"
-#include "typedefs.h"
+#include "Base/highresclock.h"
+#include "Base/smallmath.h"
+#include "Base/typedefs.h"
 #include <cassert>
 #include <cstdlib>
 #include <stdio.h>

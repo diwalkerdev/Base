@@ -1,4 +1,4 @@
-#include "debug_services.h"
+#include "Base/debug_services.h"
 #if defined(_MSC_VER)
 #include <SDL.h>
 #else
@@ -6,7 +6,7 @@
 #endif
 #include <cassert>
 
-Debug_TimeBlockStore* global_debug_time_block_store{ nullptr };
+Debug_TimeBlockStore* global_debug_time_block_store { nullptr };
 
 void
 Debug_InitGlobalDebugServices()

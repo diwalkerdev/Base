@@ -1,11 +1,11 @@
 #pragma once
 
-#include "dllexports.h"
+#include "Base/dllexports.h"
+#include <algorithm>
 #include <array>
 #include <cstddef>
 #include <stdexcept>
 #include <vector>
-#include <algorithm>
 
 #define CONTAINER (*container)
 
@@ -138,17 +138,27 @@ struct backfill_vector
 
     // Capacity.
     constexpr size_type
-    size() const noexcept { return last; }
+    size() const noexcept
+    {
+        return last;
+    }
 
     constexpr size_type
-    capacity() const noexcept { return _Nm; }
+    capacity() const noexcept
+    {
+        return _Nm;
+    }
 
     [[nodiscard]] constexpr bool
-    empty() const noexcept { return size() == 0; }
+    empty() const noexcept
+    {
+        return size() == 0;
+    }
 
 
     // Accessors.
-    reference at(std::size_t pos)
+    reference
+    at(std::size_t pos)
     {
         if (pos < 0 || pos >= last)
         {
@@ -157,7 +167,8 @@ struct backfill_vector
         return CONTAINER.at(pos);
     }
 
-    reference operator[](size_t pos)
+    reference
+    operator[](size_t pos)
     {
         return CONTAINER[pos];
     }
@@ -165,7 +176,8 @@ struct backfill_vector
     // Modifiers.
     /// @brief increases the container size up to a maximum of capacity.
     /// The new item can be accessed using back().
-    void allocate()
+    void
+    allocate()
     {
         auto next = last + 1;
         if (next > capacity())
@@ -175,7 +187,8 @@ struct backfill_vector
         last = next;
     }
 
-    void remove(size_type pos) noexcept(false)
+    void
+    remove(size_type pos) noexcept(false)
     {
         using std::swap;
         auto& back = CONTAINER.at(last - 1);
@@ -185,7 +198,8 @@ struct backfill_vector
         last -= 1;
     }
 
-    void remove(std::vector<std::size_t> idx)
+    void
+    remove(std::vector<std::size_t> idx)
     {
         // a is the current value to look at.
         // pivot is the position after partitioning using the value of a.
@@ -243,7 +257,7 @@ struct backfill_vector
 
 private:
     std::array<_Tp, _Nm>* container;
-    std::size_t           last{ 0 };
+    std::size_t           last { 0 };
 };
 
 #undef CONTAINER

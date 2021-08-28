@@ -1,4 +1,4 @@
-#include "debug_services.h"
+#include "Base/debug_services.h"
 #if defined(_MSC_VER)
 #include <SDL.h>
 #else
@@ -209,7 +209,7 @@ Test_LoopWhenMemoryExceeded()
 {
     PRINT_FUNC_NAME();
 
-    GameStruct game_struct{ 0 };
+    GameStruct game_struct { 0 };
     auto       rp_struct = Debug_Make_RecordPlaybackFromMemory(Bytes(4));
 
     // Get into record mode.

@@ -1,9 +1,10 @@
-#include "containers/backfill_vector.hpp"
+#include "Base/containers/backfill_vector.hpp"
 #include <cassert>
 #include <exception>
 
 
-auto make_bfv_12345() -> backfill_vector<int, 5>
+auto
+make_bfv_12345() -> backfill_vector<int, 5>
 {
     backfill_vector<int, 5> bfv;
     bfv.allocate();
@@ -20,14 +21,16 @@ auto make_bfv_12345() -> backfill_vector<int, 5>
     return bfv;
 }
 
-void test_starts_empty()
+void
+test_starts_empty()
 {
     backfill_vector<int, 5> bfv;
     assert(bfv.size() == 0);
     assert(bfv.capacity() == 5);
 }
 
-void test_size_increases_when_items_allocated()
+void
+test_size_increases_when_items_allocated()
 {
     backfill_vector<int, 5> bfv;
 
@@ -42,7 +45,8 @@ void test_size_increases_when_items_allocated()
     assert(bfv.size() == 5);
 }
 
-void test_size_decreases_when_items_removed()
+void
+test_size_decreases_when_items_removed()
 {
     auto bfv = make_bfv_12345();
 
@@ -59,7 +63,8 @@ void test_size_decreases_when_items_removed()
     assert(bfv.size() == 0);
 }
 
-void test_values_get_written_correctly()
+void
+test_values_get_written_correctly()
 {
     auto bv = make_bfv_12345();
     assert(bv[0] == 1);
@@ -69,7 +74,8 @@ void test_values_get_written_correctly()
     assert(bv[4] == 5);
 }
 
-void test_riterators()
+void
+test_riterators()
 {
     auto bfv = make_bfv_12345();
     auto rb  = bfv.rbegin();
@@ -92,7 +98,8 @@ void test_riterators()
 }
 
 
-void test_vector_back_fills_when_items_removed()
+void
+test_vector_back_fills_when_items_removed()
 {
     auto bfv = make_bfv_12345();
 
@@ -123,7 +130,8 @@ void test_vector_back_fills_when_items_removed()
 }
 
 
-void test_remove_from_list_of_indices()
+void
+test_remove_from_list_of_indices()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 1, 3 });
@@ -137,7 +145,8 @@ void test_remove_from_list_of_indices()
     assert(bfv.size() == 3);
 }
 
-void test_does_not_remove_duplicate_idx_more_than_once_variant_1()
+void
+test_does_not_remove_duplicate_idx_more_than_once_variant_1()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 1, 1, 3 });
@@ -151,7 +160,8 @@ void test_does_not_remove_duplicate_idx_more_than_once_variant_1()
     assert(bfv.size() == 3);
 }
 
-void test_does_not_remove_duplicate_idx_more_than_once_variant_2()
+void
+test_does_not_remove_duplicate_idx_more_than_once_variant_2()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 3, 3, 1 });
@@ -166,7 +176,8 @@ void test_does_not_remove_duplicate_idx_more_than_once_variant_2()
     assert(bfv.size() == 3);
 }
 
-void test_remove_last_item()
+void
+test_remove_last_item()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 4, 4 });
@@ -175,7 +186,8 @@ void test_remove_last_item()
     assert(bfv.size() == 4);
 }
 
-void test_remove_first_item()
+void
+test_remove_first_item()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 0, 0 });
@@ -184,7 +196,8 @@ void test_remove_first_item()
     assert(bfv.size() == 4);
 }
 
-void test_removes_in_backwards_order()
+void
+test_removes_in_backwards_order()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 4, 3 });
@@ -192,7 +205,8 @@ void test_removes_in_backwards_order()
     assert(bfv.size() == 3);
 }
 
-void test_removes_end_sequence()
+void
+test_removes_end_sequence()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 2, 3, 4 });
@@ -200,7 +214,8 @@ void test_removes_end_sequence()
     assert(bfv.size() == 2);
 }
 
-void test_remove_invalid_indices_does_nothing()
+void
+test_remove_invalid_indices_does_nothing()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({ 5, 6 });
@@ -209,7 +224,8 @@ void test_remove_invalid_indices_does_nothing()
     assert(bfv.size() == 5);
 }
 
-void test_remove_empty()
+void
+test_remove_empty()
 {
     auto bfv = make_bfv_12345();
     bfv.remove({});
@@ -218,7 +234,8 @@ void test_remove_empty()
     assert(bfv.size() == 5);
 }
 
-void test_can_iterate_const_items()
+void
+test_can_iterate_const_items()
 {
     auto bfv = make_bfv_12345();
     int  x   = 0;
@@ -229,7 +246,8 @@ void test_can_iterate_const_items()
     assert(x == 15);
 }
 
-void test_allocation_beyond_capacity_throws()
+void
+test_allocation_beyond_capacity_throws()
 {
     auto threw = false;
     auto bfv   = make_bfv_12345();
@@ -245,7 +263,8 @@ void test_allocation_beyond_capacity_throws()
     assert(threw);
 }
 
-void test_accessing_elements_before_allocation_throws()
+void
+test_accessing_elements_before_allocation_throws()
 {
     auto                    threw = false;
     backfill_vector<int, 5> bv;
@@ -262,7 +281,8 @@ void test_accessing_elements_before_allocation_throws()
     assert(threw);
 }
 
-void test_accessing_elements_beyond_allocation_throws()
+void
+test_accessing_elements_beyond_allocation_throws()
 {
     auto                    threw = false;
     backfill_vector<int, 5> bv;
@@ -280,7 +300,8 @@ void test_accessing_elements_beyond_allocation_throws()
     assert(threw);
 }
 
-void test_back_accesses_correct_element()
+void
+test_back_accesses_correct_element()
 {
     backfill_vector<int, 5> bv;
 
@@ -296,7 +317,8 @@ void test_back_accesses_correct_element()
     assert(bv[1] == 77);
 }
 
-void test_backfill_vector_main()
+void
+test_backfill_vector_main()
 {
     test_starts_empty();
     test_size_increases_when_items_allocated();

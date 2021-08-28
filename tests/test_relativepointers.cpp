@@ -1,10 +1,10 @@
-#include "linux/platform.h"
-#include "typedefs.h"
+#include "Base/platform/platform.h"
+#include "Base/typedefs.h"
 #include <array>
 #include <cassert>
+#include <concepts>
 #include <cstdio>
 #include <limits>
-#include <concepts>
 
 //////////////////////////////////////////////////////////////////////////////
 
@@ -52,27 +52,32 @@ struct rptr
         Set(other);
     }
 
-    void Set(Tp* other)
+    void
+    Set(Tp* other)
     {
         offset = CalcOffset<Int>((uint64)this, (uint64)other);
     }
 
-    Tp* Get()
+    Tp*
+    Get()
     {
         return (Tp*)(((int8*)this) + offset);
     }
 
-    Tp& operator*()
+    Tp&
+    operator*()
     {
         return *(((int8*)this) + offset);
     }
 
-    Tp* operator->()
+    Tp*
+    operator->()
     {
         return (Tp*)(((int8*)this) + offset);
     }
 
-    rptr<Tp, Int> operator=(Tp* other)
+    rptr<Tp, Int>
+    operator=(Tp* other)
     {
         Set(other);
         return *this;
@@ -83,12 +88,14 @@ struct rptr
         return offset != 0;
     }
 
-    bool IsNull() const
+    bool
+    IsNull() const
     {
         return offset == 0;
     }
 
-    void Reset()
+    void
+    Reset()
     {
         offset = 0;
     }

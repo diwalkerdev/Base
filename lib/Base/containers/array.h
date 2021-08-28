@@ -1,6 +1,6 @@
 #pragma once
 
-#include "dllexports.h"
+#include "Base/dllexports.h"
 #include <cassert>
 #include <cstddef>
 
@@ -20,12 +20,13 @@ struct Array
 
     // Data members
     //
-    value_type  container[Nm];
-    size_t last{ 0 };
+    value_type container[Nm];
+    size_t     last { 0 };
 
     // Modifiers
     //
-    bool reserve(size_t n)
+    bool
+    reserve(size_t n)
     {
         auto size = last + n;
         if (size > Nm)
@@ -121,16 +122,28 @@ struct Array
     // Capacity Functions.
     //
     constexpr size_t
-    size() const noexcept { return last; }
+    size() const noexcept
+    {
+        return last;
+    }
 
     constexpr size_t
-    capacity() const noexcept { return Nm; }
+    capacity() const noexcept
+    {
+        return Nm;
+    }
 
     constexpr bool
-    empty() const noexcept { return size() == 0; }
+    empty() const noexcept
+    {
+        return size() == 0;
+    }
 
     constexpr bool
-    full() const noexcept { return size() == Nm; }
+    full() const noexcept
+    {
+        return size() == Nm;
+    }
 
 
     // Access Functions.

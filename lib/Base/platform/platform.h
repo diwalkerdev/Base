@@ -1,9 +1,9 @@
 #pragma once
 
 #if defined(_MSC_VER)
-#include "linux/platform_windows.h"
+#include "Base/platform/platform_windows.h"
 #else
-#include "linux/platform_linux.h"
+#include "Base/platform/platform_linux.h"
 #endif
 
 
