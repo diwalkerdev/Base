@@ -148,7 +148,7 @@ Event_QueryAndReset(EventTable& table, int event, int clear_value)
 }
 
 void
-Window_Init(Window& the_window, int screen_width, int screen_height, bool hw_acceleration)
+Window_Init(Window& the_window, int screen_width, int screen_height, bool use_hw_acceleration)
 {
     SDL_Window* window;
     {
@@ -171,7 +171,7 @@ Window_Init(Window& the_window, int screen_width, int screen_height, bool hw_acc
 
     SDL_Renderer* renderer;
     {
-        auto renderer_mode = hw_acceleration
+        auto renderer_mode = use_hw_acceleration
             ? (SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC)
             : SDL_RENDERER_SOFTWARE;
 
@@ -194,12 +194,14 @@ Window_Init(Window& the_window, int screen_width, int screen_height, bool hw_acc
     SDL_GetWindowPosition(the_window.window, &the_window.x, &the_window.y);
 }
 
+
 void
-Free_Window(Window& window)
+Window_Free(Window& window)
 {
     SDL_DestroyWindow(window.window);
     SDL_DestroyRenderer(window.renderer);
 }
+
 
 void
 Window_Clear(Window& window)
@@ -209,28 +211,31 @@ Window_Clear(Window& window)
     SDL_RenderClear(window.renderer);
 }
 
+
 void
 Window_PresentRenderer(Window& window)
 {
     SDL_RenderPresent(window.renderer);
 }
 
+
 void
 Window_HandleEvents(Window& window, EventTable& events)
 {
     if (Event_QueryAndReset(events, EVENT_WINDOW_RESIZED, 0))
     {
-        printf("resized\n");
         SDL_GetWindowSize(window.window, &window.w, &window.h);
+        printf("Window_HandleEvents: window resized %d %d\n", window.w, window.h);
         // events[EVENT_RENDER] += 1;
     }
     if (Event_QueryAndReset(events, EVENT_WINDOW_MOVED, 0))
     {
         SDL_GetWindowPosition(window.window, &window.x, &window.y);
-        printf("moved %d %d\n", window.x, window.y);
+        printf("Window_HandleEvents: window moved %d %d\n", window.x, window.y);
         // events[EVENT_RENDER] += 1;
     }
 }
+
 
 void
 Window_LoadState(Window* window)

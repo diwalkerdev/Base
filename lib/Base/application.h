@@ -131,6 +131,7 @@ Event_ConvertFromSDLEvent(SDL_Event& event);
 public_func void
 Event_UpdateKeyState(KeyState& state, int current_value);
 
+
 template <size_t Nm>
 void
 Event_PollSDLKeyboardEvents(Array<KeyBinding, Nm>& key_bindings, EventTable& event_table)
@@ -207,7 +208,7 @@ public_func void
 Window_Init(Window& window, int screen_width, int screen_height, bool hw_acceleration);
 
 public_func void
-Free_Window(Window& window);
+Window_Free(Window& window);
 
 public_func void
 Window_Clear(Window& window);
