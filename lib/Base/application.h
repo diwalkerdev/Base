@@ -20,13 +20,21 @@
 #define EVENT_MANAGER_NUM_KEYS 5
 #endif
 
+
+// clang-format off
+#define compile_u8(name, value) constexpr uint8 const(name) = (value)
+#define compile_u64(name, value) constexpr uint64 const(name) = (value)
+#define compile_float(name, value) constexpr float const(name) = (value)
+#define compile(type, name, value) constexpr type const name = value
+// clang-format on
+
 using SystemError = uint8;
 
 constexpr SystemError const SYS_NO_ERROR              = 0;
 constexpr SystemError const SYS_CREATE_WINDOW_ERROR   = 1;
 constexpr SystemError const SYS_CREATE_RENDERER_ERROR = 2;
 
-// TODO: Event system needs to be easily extendable.
+
 using Event = uint8;
 
 constexpr Event const EVENT_NO_EVENT              = 0;
@@ -36,7 +44,15 @@ constexpr Event const EVENT_SIMULATION            = 3;
 constexpr Event const EVENT_WINDOW_RESIZED        = 4;
 constexpr Event const EVENT_WINDOW_MOVED          = 5;
 constexpr Event const EVENT_TOGGLE_RECORDPLAYBACK = 6;
-constexpr Event const EVENT_SIZE                  = 7; // Must be last.
+constexpr Event const EVENT_MOUSE_LEFT_DOWN       = 7;
+constexpr Event const EVENT_MOUSE_LEFT_UP         = 8;
+constexpr Event const EVENT_MOUSE_RIGHT_DOWN      = 9;
+constexpr Event const EVENT_MOUSE_RIGHT_UP        = 10;
+constexpr Event const EVENT_MOUSE_UNKNOWN_DOWN    = 11;
+constexpr Event const EVENT_MOUSE_UNKNOWN_UP      = 12;
+constexpr Event const EVENT_MOUSE_MOVED           = 13;
+constexpr Event const EVENT_MOUSE_WHEEL           = 14;
+constexpr Event const EVENT_SIZE                  = 15; // Must be last.
 
 using EventTable = std::array<Event, EVENT_SIZE>;
 
@@ -54,9 +70,7 @@ public_struct EventTimer
     Event  event;
 };
 
-#define compile_u8(name, value) constexpr uint8 const(name) = (value)
-#define compile_u64(name, value) constexpr uint64 const(name) = (value)
-#define compile_float(name, value) constexpr float const(name) = (value)
+
 compile_u8(KEY_BINDING_LCTRL, 0x01);
 compile_u8(KEY_BINDING_RCTRL, 0x02);
 compile_u8(KEY_BINDING_LALT, 0x04);
@@ -72,12 +86,34 @@ public_struct KeyBinding
     uint8        flags;
 };
 
+using MouseButtonState = int8;
+compile(MouseButtonState, MOUSE_BUTTON_RELEASED, 0);
+compile(MouseButtonState, MOUSE_BUTTON_PRESSED, 1);
+
+
+public_struct MouseButton
+{
+    MouseButtonState state { MOUSE_BUTTON_RELEASED };
+    uint8            clicks { 0 };
+};
+
+
+public_struct MouseState
+{
+    int32 x { 0 };
+    int32 y { 0 };
+
+    MouseButton left_mouse;
+    MouseButton right_mouse;
+};
+
 
 public_struct EventManager
 {
     HighResCounter clk;
     uint64         dcount;
     EventTable     event_table { 0 };
+    MouseState     mouse_state;
 
     Array<EventTimer, EVENT_MANAGER_NUM_TIMERS> timers;
     Array<KeyBinding, EVENT_MANAGER_NUM_KEYS>   key_bindings;

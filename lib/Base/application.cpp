@@ -44,6 +44,34 @@ Event_ConvertFromSDLEvent(SDL_Event& event)
         case SDL_WINDOWEVENT_MOVED:
             return EVENT_WINDOW_MOVED;
         }
+    case SDL_MOUSEBUTTONDOWN:
+        if (event.button.button == SDL_BUTTON_LEFT)
+        {
+            return EVENT_MOUSE_LEFT_DOWN;
+        }
+        else if (event.button.button == SDL_BUTTON_RIGHT)
+        {
+            return EVENT_MOUSE_RIGHT_DOWN;
+        }
+        else
+        {
+            return EVENT_MOUSE_UNKNOWN_DOWN;
+        }
+    case SDL_MOUSEBUTTONUP:
+        if (event.button.button == SDL_BUTTON_LEFT)
+        {
+            return EVENT_MOUSE_LEFT_UP;
+        }
+        else if (event.button.button == SDL_BUTTON_RIGHT)
+        {
+            return EVENT_MOUSE_RIGHT_UP;
+        }
+        else
+        {
+            return EVENT_MOUSE_UNKNOWN_UP;
+        }
+    case SDL_MOUSEMOTION:
+        return EVENT_MOUSE_MOVED;
     }
     return EVENT_NO_EVENT;
 }
@@ -91,6 +119,44 @@ Event_PollSDLEvents(EventManager& event_manager)
     while (SDL_PollEvent(&sdl_event) != 0)
     {
         Event event = Event_ConvertFromSDLEvent(sdl_event);
+
+        if (event == EVENT_MOUSE_MOVED)
+        {
+            event_manager.mouse_state.x = sdl_event.motion.x;
+            event_manager.mouse_state.y = sdl_event.motion.y;
+        }
+
+        if (event == EVENT_MOUSE_LEFT_DOWN || event == EVENT_MOUSE_LEFT_UP)
+        {
+            auto& mouse_state = event_manager.mouse_state.left_mouse;
+
+            mouse_state.clicks = sdl_event.button.clicks;
+
+            if (event == EVENT_MOUSE_LEFT_DOWN)
+            {
+                mouse_state.state = MOUSE_BUTTON_PRESSED;
+            }
+            else if (event == EVENT_MOUSE_LEFT_UP)
+            {
+                mouse_state.state = MOUSE_BUTTON_RELEASED;
+            }
+        }
+
+        if (event == EVENT_MOUSE_RIGHT_DOWN || event == EVENT_MOUSE_RIGHT_UP)
+        {
+            auto& mouse_state = event_manager.mouse_state.right_mouse;
+
+            mouse_state.clicks = sdl_event.button.clicks;
+
+            if (event == EVENT_MOUSE_RIGHT_DOWN)
+            {
+                mouse_state.state = MOUSE_BUTTON_PRESSED;
+            }
+            else if (event == EVENT_MOUSE_RIGHT_UP)
+            {
+                mouse_state.state = MOUSE_BUTTON_RELEASED;
+            }
+        }
 
         event_manager.event_table[event] = 1;
     }
