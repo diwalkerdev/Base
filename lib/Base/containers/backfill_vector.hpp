@@ -194,7 +194,7 @@ struct backfill_vector
         auto& back = CONTAINER.at(last - 1);
         auto& x    = CONTAINER.at(pos);
 
-        swap(x, back);
+        x = std::move(back);
         last -= 1;
     }
 
