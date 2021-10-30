@@ -199,6 +199,20 @@ Event_Poll(EventManager& event_manager)
 
 
 int
+Event_Query(EventManager& event_manager, int event)
+{
+    return Event_Query(event_manager.event_table, event);
+}
+
+
+int
+Event_Query(EventTable& table, int event)
+{
+    return table[event];
+}
+
+
+int
 Event_QueryAndReset(EventManager& event_manager, int event, int clear_value)
 {
     return Event_QueryAndReset(event_manager.event_table, event, clear_value);

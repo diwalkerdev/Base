@@ -224,11 +224,19 @@ Event_Poll(EventManager& event_manager);
 
 
 public_func int
-Event_QueryAndReset(EventManager& event_manager, int event, int clear_value);
+Event_Query(EventManager& event_manager, int event);
 
 
 public_func int
-Event_QueryAndReset(EventTable& table, int event, int clear_value);
+Event_Query(EventTable& table, int event);
+
+
+public_func int
+Event_QueryAndReset(EventManager& event_manager, int event, int clear_value = 0);
+
+
+public_func int
+Event_QueryAndReset(EventTable& table, int event, int clear_value = 0);
 
 
 public_struct Window
