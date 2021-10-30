@@ -24,6 +24,11 @@ struct backfill_vector
     typedef std::reverse_iterator<iterator>       reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
+private:
+    std::array<_Tp, _Nm>* container;
+    std::size_t           last { 0 };
+
+public:
     // Constructors.
     backfill_vector()
     {
@@ -255,9 +260,11 @@ struct backfill_vector
         last = back + 1;
     }
 
-private:
-    std::array<_Tp, _Nm>* container;
-    std::size_t           last { 0 };
+    void
+    clear()
+    {
+        last = 0;
+    }
 };
 
 #undef CONTAINER
