@@ -239,13 +239,24 @@ public_func int
 Event_QueryAndReset(EventTable& table, int event, int clear_value = 0);
 
 
+#define SCREEN_HEIGHT(renderer) (int32)(*renderer.screen_h)
+#define TO_EUCLID(renderer, x) SCREEN_HEIGHT(renderer) - (x)
+
+public_struct Renderer
+{
+    SDL_Renderer* renderer;
+    int32*        screen_h;
+};
+
+
 public_struct Window
 {
-    SDL_Window*   window   = nullptr;
-    SDL_Renderer* renderer = nullptr;
-    int32         w = 0, h = 0;
-    int32         x = 0, y = 0;
-    SystemError   error = SYS_NO_ERROR;
+    SDL_Window* window;
+    Renderer    renderer;
+
+    int32       w = 0, h = 0;
+    int32       x = 0, y = 0;
+    SystemError error = SYS_NO_ERROR;
 };
 
 public_func void

@@ -268,8 +268,9 @@ Window_Init(Window& the_window, int screen_width, int screen_height, bool use_hw
         }
     }
 
-    the_window.window   = window;
-    the_window.renderer = renderer;
+    the_window.window            = window;
+    the_window.renderer.renderer = renderer;
+    the_window.renderer.screen_h = &the_window.h;
     SDL_GetWindowSize(the_window.window, &the_window.w, &the_window.h);
     SDL_GetWindowPosition(the_window.window, &the_window.x, &the_window.y);
 }
@@ -279,23 +280,23 @@ void
 Window_Free(Window& window)
 {
     SDL_DestroyWindow(window.window);
-    SDL_DestroyRenderer(window.renderer);
+    SDL_DestroyRenderer(window.renderer.renderer);
 }
 
 
 void
 Window_Clear(Window& window)
 {
-    SDL_SetRenderTarget(window.renderer, nullptr);
-    SDL_SetRenderDrawColor(window.renderer, 0xff, 0xff, 0xff, 0xff);
-    SDL_RenderClear(window.renderer);
+    SDL_SetRenderTarget(window.renderer.renderer, nullptr);
+    SDL_SetRenderDrawColor(window.renderer.renderer, 0xff, 0xff, 0xff, 0xff);
+    SDL_RenderClear(window.renderer.renderer);
 }
 
 
 void
 Window_PresentRenderer(Window& window)
 {
-    SDL_RenderPresent(window.renderer);
+    SDL_RenderPresent(window.renderer.renderer);
 }
 
 
