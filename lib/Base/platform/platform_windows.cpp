@@ -2,17 +2,17 @@
 
 #include <windows.h>
 
-#include <memoryapi.h>
 #include <cassert>
+#include <memoryapi.h>
 
 
 void*
 Windows_AllocateVirtualMemory(uint64 size, uint64 start_addr)
 {
     auto* region = VirtualAlloc((void*)start_addr,
-                        size,
-                        MEM_COMMIT | MEM_RESERVE, // allocation type
-                        PAGE_READWRITE); // protect
+                                size,
+                                MEM_COMMIT | MEM_RESERVE, // allocation type
+                                PAGE_READWRITE); // protect
 
     assert(region);
     return region;
@@ -22,7 +22,7 @@ Windows_AllocateVirtualMemory(uint64 size, uint64 start_addr)
 void
 Windows_FreeVirtualMemory(void* addr, uint64 size)
 {
-    auto result = VirtualFree(addr, 
+    auto result = VirtualFree(addr,
                               size,
                               MEM_RELEASE);
     assert(result == 0);

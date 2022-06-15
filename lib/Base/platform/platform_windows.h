@@ -1,7 +1,7 @@
 #pragma once
 
-#include "typedefs.h"
 #include "dllexports.h"
+#include "typedefs.h"
 
 
 public_func void*

@@ -1,10 +1,8 @@
 #include "Base/debug_services.h"
-#if defined(_MSC_VER)
-#include <SDL.h>
-#else
+#include "Base/platform/platform.h"
 #include <SDL2/SDL.h>
-#endif
 #include <cassert>
+
 
 Debug_TimeBlockStore* global_debug_time_block_store { nullptr };
 
@@ -33,33 +31,49 @@ Debug_GetTimeBlockRecord(Debug_TimeBlockStore* store,
 void
 Debug_PrintTimeBlockRecords(Debug_TimeBlockStore* store)
 {
-    float const CYCLES_PER_SEC = SDL_GetPerformanceFrequency();
+    static float const CYCLES_PER_SEC = Platform_GetPerformanceFrequency();
+    float              min_pcent;
+    float              max_pcent;
 
     for (auto const& item : store->file_name_to_records_map)
     {
-        printf("%s\n", item.first);
+        SDL_Log("%s\n", item.first);
+        SDL_Log("%6s %10s %10s %10s %10s %10s %10s %10s %10s %10s\n",
+                "Line",
+                "Duration",
+                "Count",
+                "Cycles",
+                "Avg",
+                "Min",
+                "Min%",
+                "Max",
+                "Max%",
+                "Func");
 
-        for (auto i = 0u;
-             i < item.second.size();
-             ++i)
+        for (auto i = 0u; i < item.second.size(); ++i)
         {
             auto const& record = item.second[i];
 
-            auto cycles = record.cycles;
-            auto count  = record.count;
-
-            if (count > 0)
+            if (record.count > 0)
             {
-                printf("LN:%5d  time:%f  Count:%4lu  cycles:%8lu  %s\n",
-                       record.line_number,
-                       cycles / CYCLES_PER_SEC,
-                       count,
-                       cycles,
-                       record.func_name);
+                min_pcent = (float(record._min - record._avg) / record._avg) * 100;
+                max_pcent = (float(record._max - record._avg) / record._avg) * 100;
+
+                SDL_Log("%6d %10f %10lu %10lu %10f %10f %10.1f %10f %10.1f %10s\n",
+                        record.line_number,
+                        record.cycles / CYCLES_PER_SEC,
+                        record.count,
+                        record.cycles,
+                        record._avg / CYCLES_PER_SEC,
+                        record._min / CYCLES_PER_SEC,
+                        min_pcent,
+                        record._max / CYCLES_PER_SEC,
+                        max_pcent,
+                        record.func_name);
             }
         }
 
-        printf("\n");
+        SDL_Log("\n");
     }
 }
 
@@ -82,51 +96,28 @@ TimeBlock::TimeBlock(Debug_TimeBlockStore* store, char const* file_name, char co
     record->func_name   = func_name;
     record->line_number = line_number;
 
-    start_cycles = SDL_GetPerformanceCounter();
+    start_cycles = Platform_GetPerformanceCounter();
 }
 
 TimeBlock::~TimeBlock()
 {
-    record->cycles += (SDL_GetPerformanceCounter() - start_cycles);
+    Long cycles = (Platform_GetPerformanceCounter() - start_cycles);
+    record->cycles += cycles;
     record->count += 1;
+
+    record->_min = std::min(record->_min, cycles);
+    record->_max = std::max(record->_max, cycles);
+    if (record->count > 1)
+    {
+        // NOTE(DW): We purposely don't round here as we don't
+        // care about fractions of a cycle.
+        record->_avg += cycles;
+        record->_avg /= 2;
+    }
+    else
+    {
+        record->_avg = cycles;
+    }
 }
 
 //////////////////////////////////////////////////////////////////////////////
-
-SDL_RWops*
-Debug_RecordingStartFromFile(char const* file_name)
-{
-    return SDL_RWFromFile(file_name, "wb");
-}
-
-SDL_RWops*
-Debug_RecordingStartFromMemory(void* memory, uint64 size)
-{
-    return SDL_RWFromMem(memory, size);
-}
-
-SDL_RWops*
-Debug_PlaybackStartFromFile(char const* file_name)
-{
-    return SDL_RWFromFile(file_name, "rb");
-}
-
-SDL_RWops*
-Debug_PlaybackStartFromMemory(void* memory, uint64 size)
-{
-    return SDL_RWFromMem(memory, size);
-}
-
-size_t
-Debug_RecordingStop(SDL_RWops* io)
-{
-    auto pos = SDL_RWseek(io, 0, RW_SEEK_CUR);
-    SDL_RWclose(io);
-    return pos;
-}
-
-void
-Debug_PlaybackStop(SDL_RWops* io)
-{
-    SDL_RWclose(io);
-}

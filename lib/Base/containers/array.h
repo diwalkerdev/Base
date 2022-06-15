@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/dllexports.h"
+#include <algorithm>
 #include <cassert>
 #include <cstddef>
 
@@ -38,24 +39,31 @@ struct Array
         return true;
     }
 
+
+    void
+    reserve_all()
+    {
+        last = Nm;
+    }
+
     // Iterators.
     /// begin - a forward iterator starting at the first element of the container.
     constexpr auto
     begin() noexcept
     {
-        return iterator(&container);
+        return iterator(&container[0]);
     }
 
     constexpr auto
     begin() const noexcept
     {
-        return const_iterator(&container);
+        return const_iterator(&container[0]);
     }
 
     constexpr auto
     cbegin() const noexcept
     {
-        return const_iterator(&container);
+        return const_iterator(&container[0]);
     }
 
 
@@ -155,6 +163,15 @@ struct Array
         return CONTAINER[pos];
     }
 
+
+    const_reference
+    operator[](size_t pos) const
+    {
+        assert(pos < Nm);
+        return CONTAINER[pos];
+    }
+
+
     /// back - returns the element at the back of the container.
     constexpr auto&
     back() noexcept
@@ -172,6 +189,41 @@ struct Array
     cback() const noexcept
     {
         return CONTAINER[last - 1];
+    }
+
+
+    _Tp
+    pop_front(_Tp default_val)
+    {
+        if (last == 0)
+        {
+            return default_val;
+        }
+
+        _Tp value = CONTAINER[0];
+        std::shift_left(this->begin(), this->end(), 1);
+        --last;
+        return value;
+    }
+
+    bool
+    push_back(_Tp value)
+    {
+        if (!reserve(1))
+        {
+            return false;
+        }
+        else
+        {
+            CONTAINER[last - 1] = value;
+            return true;
+        }
+    }
+
+    void
+    clear()
+    {
+        last = 0;
     }
 };
 
