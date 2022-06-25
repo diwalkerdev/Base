@@ -20,6 +20,7 @@ constexpr float const SIM_PERIOD    = 1.0f / SIM_HZ;
 
 struct Components
 {
+    Int           entitiy_id;
     Int           state_idx;
     Int           input_idx;
     Int           position_idx;
@@ -57,7 +58,7 @@ BitToIndex(int val, int num_bits = 32)
 }
 
 
-using UpdateStateFunction = void (*)(Components const&);
+using UpdateStateFunction = void (*)(Components*);
 
 struct StateComponent
 {
@@ -157,7 +158,7 @@ enum PlayerAction
 
 struct Player
 {
-    Components components;
+    Components* components;
 };
 
 
@@ -168,6 +169,7 @@ struct GameStruct
     SDL_EventKeyFilter    filter;
     SDL_EventKeyFilter    player_input_filter;
     bool                  running;
+    Array<Components, 16> entities;
     EntityComponentSystem ecs;
     Player                player;
 } game_struct;
@@ -225,7 +227,7 @@ Component_Reserve(EntityComponentSystem& ecs, ComponentId id)
 
 void
 System_UpdateMovement(EntityComponentSystem& ecs,
-                      Components const&      components,
+                      Components*            components,
                       float                  dt,
                       bool                   update_projection = false)
 {
@@ -238,14 +240,14 @@ System_UpdateMovement(EntityComponentSystem& ecs,
     InputComponent    default_input { 0, 0 };
     VelocityComponent default_velocity { 0, 0 };
 
-    if (components.state_idx >= 0)
+    if (components->state_idx >= 0)
     {
-        state = &ecs.states[components.state_idx];
+        state = &ecs.states[components->state_idx];
     }
 
-    if (components.input_idx >= 0)
+    if (components->input_idx >= 0)
     {
-        input = &ecs.inputs[components.input_idx];
+        input = &ecs.inputs[components->input_idx];
     }
     else
     {
@@ -253,15 +255,15 @@ System_UpdateMovement(EntityComponentSystem& ecs,
     }
 
     // Must have a position.
-    assert(components.position_idx >= 0);
+    assert(components->position_idx >= 0);
     {
-        position = &ecs.positions[components.position_idx];
+        position = &ecs.positions[components->position_idx];
     }
 
     bool is_moving = false;
-    if (components.velocity_idx >= 0)
+    if (components->velocity_idx >= 0)
     {
-        velocity = &ecs.velocities[components.velocity_idx];
+        velocity = &ecs.velocities[components->velocity_idx];
         if (Vec_Magnitude(input->movement) > 0.5)
         {
             velocity->v = input->movement;
@@ -296,9 +298,9 @@ System_UpdateMovement(EntityComponentSystem& ecs,
     float x_dot = position->x + ((300.0f * velocity->v.x) * dt);
     float y_dot = position->y + ((300.0f * velocity->v.y) * dt);
 
-    if (update_projection && components.projection_idx >= 0)
+    if (update_projection && components->projection_idx >= 0)
     {
-        projection    = &ecs.projections[components.projection_idx];
+        projection    = &ecs.projections[components->projection_idx];
         projection->x = x_dot;
         projection->y = y_dot;
     }
@@ -365,7 +367,7 @@ System_UpdateStates()
     //     {
     //     }
     // }
-    auto& state = game_struct.ecs.states[game_struct.player.components.state_idx];
+    auto& state = game_struct.ecs.states[game_struct.player.components->state_idx];
     if (state.UpdateState)
     {
         state.UpdateState(game_struct.player.components);
@@ -385,31 +387,54 @@ System_UpdateInputQueues()
 
 
 //////////////////////////////////////////////////////////////////////////////
+Int
+Entity_Reserve()
+{
+    game_struct.entities.reserve(1);
+
+    Int id = game_struct.entities.size();
+
+    game_struct.entities.back().entitiy_id = id;
+    return id;
+}
+
+Components&
+Entity_Get(Int id)
+{
+    // TODO: Should really search for the id.
+    return game_struct.entities[id - 1];
+}
+
+//////////////////////////////////////////////////////////////////////////////
 
 void
-Player_UpdateState(Components const& components);
+Player_UpdateState(Components* components);
 
 void
 Player_Init(Player& player, EntityComponentSystem& ecs)
 {
-    player.components                = { -1 };
-    player.components.state_idx      = Component_Reserve(ecs, ComponentId::State);
-    player.components.input_idx      = Component_Reserve(ecs, ComponentId::Input);
-    player.components.position_idx   = Component_Reserve(ecs, ComponentId::Position);
-    player.components.projection_idx = Component_Reserve(ecs, ComponentId::Projection);
-    player.components.velocity_idx   = Component_Reserve(ecs, ComponentId::Velocity);
-    int texture_idx_1                = Component_Reserve(ecs, ComponentId::Texture);
-    int texture_idx_2                = Component_Reserve(ecs, ComponentId::Texture);
-    int texture_idx_3                = Component_Reserve(ecs, ComponentId::Texture);
-    int texture_idx_4                = Component_Reserve(ecs, ComponentId::Texture);
-    int texture_idx_5                = Component_Reserve(ecs, ComponentId::Texture);
-    player.components.texture_idx.push_back(texture_idx_1);
-    player.components.texture_idx.push_back(texture_idx_2);
-    player.components.texture_idx.push_back(texture_idx_3);
-    player.components.texture_idx.push_back(texture_idx_4);
-    player.components.texture_idx.push_back(texture_idx_5);
+    int         player_id  = Entity_Reserve();
+    Components& components = Entity_Get(player_id);
 
-    StateComponent& state         = ecs.states[player.components.position_idx];
+
+    player.components                 = &components;
+    player.components->state_idx      = Component_Reserve(ecs, ComponentId::State);
+    player.components->input_idx      = Component_Reserve(ecs, ComponentId::Input);
+    player.components->position_idx   = Component_Reserve(ecs, ComponentId::Position);
+    player.components->projection_idx = Component_Reserve(ecs, ComponentId::Projection);
+    player.components->velocity_idx   = Component_Reserve(ecs, ComponentId::Velocity);
+    int texture_idx_1                 = Component_Reserve(ecs, ComponentId::Texture);
+    int texture_idx_2                 = Component_Reserve(ecs, ComponentId::Texture);
+    int texture_idx_3                 = Component_Reserve(ecs, ComponentId::Texture);
+    int texture_idx_4                 = Component_Reserve(ecs, ComponentId::Texture);
+    int texture_idx_5                 = Component_Reserve(ecs, ComponentId::Texture);
+    player.components->texture_idx.push_back(texture_idx_1);
+    player.components->texture_idx.push_back(texture_idx_2);
+    player.components->texture_idx.push_back(texture_idx_3);
+    player.components->texture_idx.push_back(texture_idx_4);
+    player.components->texture_idx.push_back(texture_idx_5);
+
+    StateComponent& state         = ecs.states[player.components->position_idx];
     state.UpdateState             = &Player_UpdateState;
     state.movement                = 0;
     state.action_texture_map[0]   = texture_idx_3;
@@ -421,15 +446,15 @@ Player_Init(Player& player, EntityComponentSystem& ecs)
     state.action_timer_map[2]     = 0.1f * 5;
     state.action_timer_map.last   = 4;
 
-    InputComponent& input = ecs.inputs[player.components.input_idx];
+    InputComponent& input = ecs.inputs[player.components->input_idx];
     input.movement        = { 0, 0 };
     input.queue.reserve_all();
 
-    PositionComponent& position = ecs.positions[player.components.position_idx];
+    PositionComponent& position = ecs.positions[player.components->position_idx];
     position.x                  = 0;
     position.y                  = 0;
 
-    TextureComponent& texture_idle = ecs.textures[player.components.texture_idx[0]];
+    TextureComponent& texture_idle = ecs.textures[player.components->texture_idx[0]];
     texture_idle.n_sprites         = 1;
     texture_idle.sprite_w          = 128;
     texture_idle.sprite_h          = 64;
@@ -442,7 +467,7 @@ Player_Init(Player& player, EntityComponentSystem& ecs)
                                            "Hero/Sprites/Idle.png");
     assert(texture_idle.texture != nullptr);
 
-    TextureComponent& texture_run = ecs.textures[player.components.texture_idx[1]];
+    TextureComponent& texture_run = ecs.textures[player.components->texture_idx[1]];
     texture_run.n_sprites         = 6;
     texture_run.sprite_w          = 128;
     texture_run.sprite_h          = 64;
@@ -456,11 +481,11 @@ Player_Init(Player& player, EntityComponentSystem& ecs)
     assert(texture_run.texture != nullptr);
 
     // TODO(DW): Order - needs reference to texture_run.
-    BoundingBoxComponent& bb = ecs.bounding_boxes[player.components.bounding_box_idx];
+    BoundingBoxComponent& bb = ecs.bounding_boxes[player.components->bounding_box_idx];
     bb.offset                = { 50.0f * texture_run.scale, 35.0f * texture_run.scale };
     bb.size                  = { 8.0f * texture_run.scale, 12.0f * texture_run.scale };
 
-    TextureComponent& texture_attack_1 = ecs.textures[player.components.texture_idx[2]];
+    TextureComponent& texture_attack_1 = ecs.textures[player.components->texture_idx[2]];
     texture_attack_1.n_sprites         = 6;
     texture_attack_1.sprite_w          = 128;
     texture_attack_1.sprite_h          = 64;
@@ -474,7 +499,7 @@ Player_Init(Player& player, EntityComponentSystem& ecs)
                                                "Hero/Sprites/Chain Attack.png");
     assert(texture_attack_1.texture != nullptr);
 
-    TextureComponent& texture_attack_2 = ecs.textures[player.components.texture_idx[3]];
+    TextureComponent& texture_attack_2 = ecs.textures[player.components->texture_idx[3]];
     texture_attack_2.n_sprites         = 6;
     texture_attack_2.sprite_w          = 128;
     texture_attack_2.sprite_h          = 64;
@@ -488,7 +513,7 @@ Player_Init(Player& player, EntityComponentSystem& ecs)
     texture_attack_2.texture = texture_attack_1.texture;
     assert(texture_attack_2.texture != nullptr);
 
-    TextureComponent& texture_attack_3 = ecs.textures[player.components.texture_idx[4]];
+    TextureComponent& texture_attack_3 = ecs.textures[player.components->texture_idx[4]];
     texture_attack_3.n_sprites         = 6;
     texture_attack_3.sprite_w          = 128;
     texture_attack_3.sprite_h          = 64;
@@ -598,7 +623,7 @@ Player_OnUpdateInput(Array<SDL_Event, SDL_EVENTQUEUESIZE>& events, void* _)
         }
     }
     auto& player = game_struct.player;
-    auto& input  = game_struct.ecs.inputs[player.components.input_idx];
+    auto& input  = game_struct.ecs.inputs[player.components->input_idx];
 
     auto lr          = d - a;
     auto ud          = s - w;
@@ -623,14 +648,14 @@ Player_OnUpdateInput(Array<SDL_Event, SDL_EVENTQUEUESIZE>& events, void* _)
 
 
 void
-Player_UpdateState(Components const& components)
+Player_UpdateState(Components* components)
 {
     // TODO: This is very specific to the player.
-    assert(components.input_idx >= 0);
-    assert(components.state_idx >= 0);
+    assert(components->input_idx >= 0);
+    assert(components->state_idx >= 0);
 
-    auto& input = game_struct.ecs.inputs[components.input_idx];
-    auto& state = game_struct.ecs.states[components.state_idx];
+    auto& input = game_struct.ecs.inputs[components->input_idx];
+    auto& state = game_struct.ecs.states[components->state_idx];
 
     auto region_1 = input.queue.begin();
     auto region_2 = input.queue.begin() + 1;
@@ -697,9 +722,12 @@ Update(float dt)
 
     while (acc >= SIM_PERIOD)
     {
-        System_UpdateMovement(game_struct.ecs,
-                              game_struct.player.components,
-                              SIM_PERIOD);
+        for (auto& components : game_struct.entities)
+        {
+            System_UpdateMovement(game_struct.ecs,
+                                  &components,
+                                  SIM_PERIOD);
+        }
 
         System_UpdateStates();
         System_UpdateInputQueues();
@@ -745,7 +773,7 @@ Render(float dt, float remainder_t)
 
     // TODO(DW): This render system is very specific to the player.
     EntityComponentSystem& ecs            = game_struct.ecs;
-    Components const&      components     = game_struct.player.components;
+    Components*            components     = game_struct.player.components;
     StateComponent*        state          = nullptr;
     PositionComponent*     position       = nullptr;
     ProjectionComponent*   projection     = nullptr;
@@ -759,31 +787,31 @@ Render(float dt, float remainder_t)
 
     SDL_WindowClear(game_struct.window, 100, 100, 100, 255);
 
-    if (components.state_idx >= 0)
+    if (components->state_idx >= 0)
     {
-        state = &ecs.states[components.state_idx];
+        state = &ecs.states[components->state_idx];
     }
-    assert(components.position_idx >= 0);
+    assert(components->position_idx >= 0);
     {
-        position = &ecs.positions[components.position_idx];
+        position = &ecs.positions[components->position_idx];
     }
-    if (components.projection_idx >= 0)
+    if (components->projection_idx >= 0)
     {
-        projection = &ecs.projections[components.projection_idx];
+        projection = &ecs.projections[components->projection_idx];
     }
-    if (components.bounding_box_idx >= 0)
+    if (components->bounding_box_idx >= 0)
     {
-        bounding_box = &ecs.bounding_boxes[components.bounding_box_idx];
+        bounding_box = &ecs.bounding_boxes[components->bounding_box_idx];
     }
 
 
     if (state && state->movement)
     {
-        active_texture = &ecs.textures[components.texture_idx[1]];
+        active_texture = &ecs.textures[components->texture_idx[1]];
     }
     else
     {
-        active_texture = &ecs.textures[components.texture_idx[0]];
+        active_texture = &ecs.textures[components->texture_idx[0]];
     }
 
     if (state && (state->action != PlayerAction::None))
@@ -793,7 +821,7 @@ Render(float dt, float remainder_t)
         active_texture = &ecs.textures[texture_id];
     }
 
-    for (auto tindx : components.texture_idx)
+    for (auto tindx : components->texture_idx)
     {
         ecs.textures[tindx].animate = false;
     }
